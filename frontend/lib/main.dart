@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/Auth/login_screen.dart';
 
 void main() {
   runApp(ProviderScope(child: MyApp()));
