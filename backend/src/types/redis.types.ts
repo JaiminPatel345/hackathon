@@ -1,19 +1,21 @@
+import {IMobile} from "./user.types.js";
+
 export interface IRedisPayload {
-  email: string,
+  mobile: IMobile,
   otp: string,
   wrongTry: number,
 }
 
 export interface IRedisOtpData {
-  email: string;
+  mobile: IMobile;
   generatedOtp: string;
   wrongAttempts: number;
   createdAt: string;
 }
 
 export interface IRedisUtils {
-  setEmailAndOtp: (email: string, generatedOtp: string) => Promise<boolean>;
-  getEmailAndOtp: (email: string) => Promise<IRedisOtpData | null>;
-  removeEmailAndOtp: (email: string) => Promise<boolean>;
-  incrementWrongAttempts: (email: string) => Promise<boolean>;
+  setMobileAndOtp: (mobile: IMobile, generatedOtp: string) => Promise<boolean>;
+  getMobileAndOtp: (mobile: IMobile ) => Promise<IRedisOtpData | null >;
+  removeMobileAndOtp: (mobile: IMobile) => Promise<boolean>;
+  incrementWrongAttempts: (mobile: IMobile) => Promise<boolean>;
 }

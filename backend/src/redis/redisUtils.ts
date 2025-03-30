@@ -3,27 +3,25 @@ import {IRedisOtpData, IRedisUtils} from "../types/redis.types.js";
 import {AppError} from "../types/custom.types.js";
 
 
-const MAX_OTP_ATTEMPTS = 3;
+const MAX_OTP_ATTEMPTS = 5;
 const OTP_EXPIRY_SECONDS = 60 * 10; // 10 minutes
 
-/**
- * Sets email and OTP data in Redis with expiration
- */
-export const setEmailAndOtp: IRedisUtils['setEmailAndOtp'] = async (email, generatedOtp) => {
-  if (!email || !generatedOtp) {
+//Sets email and OTP data in Redis with expiration
+export const setMobileAndOtp: IRedisUtils['setMobileAndOtp'] = async (mobile, generatedOtp) => {
+  if (!mobile || !generatedOtp) {
     throw new Error('Email and OTP are required');
   }
 
   try {
     const payload: IRedisOtpData = {
-      email,
+      mobile,
       generatedOtp,
       wrongAttempts: 0,
       createdAt: new Date().toISOString()
     };
 
     const response = await client.set(
-        `otp:${email}`,
+        `otp:${mobile}`,
         JSON.stringify(payload),
         {
           EX: OTP_EXPIRY_SECONDS
@@ -44,13 +42,13 @@ export const setEmailAndOtp: IRedisUtils['setEmailAndOtp'] = async (email, gener
 /**
  * Retrieves email and OTP data from Redis
  */
-export const getEmailAndOtp: IRedisUtils['getEmailAndOtp'] = async (email) => {
-  if (!email) {
-    throw new Error('Email is required');
+export const getMobileAndOtp: IRedisUtils['getMobileAndOtp'] = async (mobile) => {
+  if (!mobile) {
+    throw new Error('mobile is required');
   }
 
   try {
-    const response = await client.get(`otp:${email}`);
+    const response = await client.get(`otp:${mobile}`);
 
     if (!response) {
       return null;
@@ -60,7 +58,7 @@ export const getEmailAndOtp: IRedisUtils['getEmailAndOtp'] = async (email) => {
 
     // Check if max attempts exceeded
     if (data.wrongAttempts >= MAX_OTP_ATTEMPTS) {
-      await removeEmailAndOtp(email);
+      await removeEmailAndOtp(mobile);
       throw new AppError('Maximum OTP attempts exceeded', 400);
     }
 
@@ -68,7 +66,7 @@ export const getEmailAndOtp: IRedisUtils['getEmailAndOtp'] = async (email) => {
   } catch (error) {
     if (error instanceof SyntaxError) {
       console.error('Invalid JSON data in Redis:', error);
-      await removeEmailAndOtp(email);
+      await removeEmailAndOtp(mobile);
       return null;
     }
 
@@ -77,12 +75,10 @@ export const getEmailAndOtp: IRedisUtils['getEmailAndOtp'] = async (email) => {
   }
 };
 
-/**
- * Increments the wrong attempts counter for an OTP
- */
+// Increments the wrong attempts counter for an OTP
 export const incrementWrongAttempts: IRedisUtils['incrementWrongAttempts'] = async (email) => {
   try {
-    const data = await getEmailAndOtp(email);
+    const data = await getMobileAndOtp(email);
     if (!data) {
       return false;
     }
@@ -107,16 +103,14 @@ export const incrementWrongAttempts: IRedisUtils['incrementWrongAttempts'] = asy
   }
 };
 
-/**
- * Removes email and OTP data from Redis
- */
-export const removeEmailAndOtp: IRedisUtils['removeEmailAndOtp'] = async (email) => {
-  if (!email) {
-    throw new Error('Email is required');
+// Removes mobile and OTP data from Redis
+export const removeEmailAndOtp: IRedisUtils['removeMobileAndOtp'] = async (mobile) => {
+  if (!mobile) {
+    throw new Error('mobile is required');
   }
 
   try {
-    const response = await client.del(`otp:${email}`);
+    const response = await client.del(`otp:${mobile}`);
     return response === 1;
   } catch (error) {
     console.error('Error removing OTP data from Redis:', error);

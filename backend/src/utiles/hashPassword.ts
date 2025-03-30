@@ -1,4 +1,5 @@
-import * as crypto from "node:crypto";
+import * as jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
 
 export const checkPassword = (password: string): boolean => {
   // Password requirements:
@@ -18,24 +19,26 @@ export const checkPassword = (password: string): boolean => {
   return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
 };
 
-export const generateHashPassword = (password: string): string => {
-  const salt = crypto.randomBytes(16).toString('hex');
-  const hash = crypto
-      .createHmac('sha256', salt)
-      .update(password)
-      .digest('hex');
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-  return `${salt}:${hash}`;
+// Password hashing
+export const generateHashPassword = async (password: string): Promise<string> => {
+  return bcrypt.hash(password, 12);
 };
 
-export const verifyPassword = (password: string, hashedPassword: string): boolean => {
-  const [salt, storedHash] = hashedPassword.split(':');
+export const verifyPassword = async (password: string, hashedPassword: string): Promise<boolean> => {
+  return bcrypt.compare(password, hashedPassword);
+};
 
-  const crypto = require('crypto');
-  const hash = crypto
-      .createHmac('sha256', salt)
-      .update(password)
-      .digest('hex');
+// JWT functions
+export const generateToken = (userId: string): string => {
+  return jwt.sign({userId}, JWT_SECRET, {expiresIn: '1h'});
+};
 
-  return storedHash === hash;
+export const verifyToken = (token: string): any => {
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (error) {
+    return null;
+  }
 };

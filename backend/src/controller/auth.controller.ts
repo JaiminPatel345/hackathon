@@ -1,8 +1,10 @@
 import {Request, Response} from "express";
 import {AppError, formatResponse} from "../types/custom.types.js";
-import {ILoginRequest} from "../types/request.types.js";
+import {ILoginRequest, IRegisterRequest} from "../types/request.types.js";
 import User from "../model/user.model.js";
-import {verifyPassword} from "../utiles/hashPassword.js";
+import {generateHashPassword, verifyPassword} from "../utiles/hashPassword.js";
+import handleError from "../utiles/handleError.js";
+import handleOtp from "../utiles/handleOtp.js";
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
@@ -12,21 +14,51 @@ export const loginUser = async (req: Request, res: Response) => {
       hasMobile = true;
     }
 
-    const user =await User.findOne(hasMobile ? {mobile: identifier} : {username: identifier}).lean()
-    if(!user){
+    const user = await User.findOne(hasMobile ? {mobile: identifier} : {username: identifier}).lean()
+    if (!user) {
       console.log("User not found");
-      throw new AppError("Invalid credentials" , 401)
+      throw new AppError("Invalid credentials", 401)
     }
 
-    if(!verifyPassword(password , user.hashPassword)){
+    const isCorrectPassword = await verifyPassword(password, user.hashPassword);
+
+    if (!isCorrectPassword) {
       console.log("Wrong Password");
-      throw new AppError("Invalid credentials" , 401)
+      throw new AppError("Invalid credentials", 401)
     }
 
 
+  } catch (error: any) {
+    console.log("Error at login user");
+    handleError(error, res);
 
-  } catch (err: any) {
-    console.log("Error at login user", err);
-    res.status(err.statusCode || 500).json(formatResponse(false, err.message || "Unknown error", {err}));
+  }
+}
+
+export const registerUser = async (req: Request, res: Response) => {
+  try {
+    const {name, mobile, password, username}: IRegisterRequest = req.body;
+
+    const hashPassword = await generateHashPassword(password);
+
+    //generate and set opt
+    await handleOtp(mobile);
+
+
+    const user = await User.create({
+      name,
+      mobile,
+      password,
+      username,
+      hashPassword,
+    })
+
+    res.status(201).json(formatResponse(true,'Created successfully' , {user}));
+
+
+  } catch (error) {
+    console.log("Error at registerUser");
+    handleError(error, res);
+
   }
 }
