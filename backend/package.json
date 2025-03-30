@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Jaimin Detroja",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "build": "rimraf dist && npx tsc",
+    "prestart": "yarn build",
+    "serve": "concurrently \"tsc -w \"   \"nodemon dist/server.js\" ",
+    "preserve": "yarn build"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "concurrently": "^9.1.2",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  }
+}
