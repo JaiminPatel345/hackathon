@@ -29,16 +29,3 @@ export const generateHashPassword = async (password: string): Promise<string> =>
 export const verifyPassword = async (password: string, hashedPassword: string): Promise<boolean> => {
   return bcrypt.compare(password, hashedPassword);
 };
-
-// JWT functions
-export const generateToken = (userId: string): string => {
-  return jwt.sign({userId}, JWT_SECRET, {expiresIn: '1h'});
-};
-
-export const verifyToken = (token: string): any => {
-  try {
-    return jwt.verify(token, JWT_SECRET);
-  } catch (error) {
-    return null;
-  }
-};

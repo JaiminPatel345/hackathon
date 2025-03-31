@@ -91,7 +91,8 @@ export const verifyOtp = async (req: Request, res: Response) => {
     if (RedisData.generatedOtp.toString() === givenOtp.toString()) {
       const user = await User.findOneAndUpdate({
         username,
-        isMobileVerified: true
+        isMobileVerified: true,
+        new:true
       })
       const token = await getTokens(username)
 
@@ -111,3 +112,44 @@ export const verifyOtp = async (req: Request, res: Response) => {
     handleError(error, res);
   }
 }
+
+export const updateUserDetails = async (req: Request, res: Response) => {
+  try {
+    const username = req.username; // Get username from request (set by isAuthenticated middleware)
+
+    if (!username) {
+      res.status(401).json(formatResponse(false, "Authentication required"));
+      return
+    }
+
+    // Fields that can be updated
+    const { interests, goal, avatar , name} = req.body;
+
+    // Build update object with only the fields that are provided
+    const updateData: any = {};
+
+    if (interests !== undefined) updateData.interests = interests;
+    if (goal !== undefined) updateData.goal = goal;
+    if (avatar !== undefined) updateData.avatar = avatar;
+    if(name !== undefined) updateData.name = name;
+
+    // Find user by username and update
+    const updatedUser = await User.findOneAndUpdate(
+        {username},
+        updateData,
+        {new: true, runValidators: true}
+    ).select('-hashPassword'); // Exclude password from response
+
+    if (!updatedUser) {
+      res.status(404).json(formatResponse(false, "User not found"));
+      return
+    }
+
+    res.status(200).json(formatResponse(true, "User updated successfully", {user: updatedUser}));
+    return
+
+  } catch (error) {
+    console.log("Error at updateUserDetails");
+    handleError(error, res);
+  }
+};

@@ -7,8 +7,8 @@ const generateOtp = () => {
 };
 
 const sendOtp = async (mobile: string, otp: number) => {
-  const message = `Your One Time Password ( OTP ) from Make My Buddy is ${otp}`;
   const mobileNumber = mobile.startsWith('+') ? mobile.slice(1,) : mobile;
+  const message = `Your One Time Password ( OTP ) from Make My Buddy is ${otp}`;
 
   const response = await fetch('https://api.httpsms.com/v1/messages/send', {
     method: 'POST',
@@ -25,9 +25,8 @@ const sendOtp = async (mobile: string, otp: number) => {
   });
 
   const data = await response.json();
-  console.log("Messages Send successfully ",data);
+  console.log("Messages Send successfully ", data);
 }
-
 
 const handleOtp = async (mobile: string, username: string) => {
   const generatedOtp = generateOtp();
