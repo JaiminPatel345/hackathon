@@ -1,5 +1,4 @@
-import {setMobileAndOtp} from "../redis/redisUtils.js";
-import {AppError} from "../types/custom.types.js";
+import {setUsernameAndOtp} from "../redis/redisUtils.js";
 
 
 const generateOtp = () => {
@@ -7,26 +6,35 @@ const generateOtp = () => {
   return otp.toString();
 };
 
-const sendOtp =async (mobile: string, otp: number) => {
+const sendOtp = async (mobile: string, otp: number) => {
   const message = `Your One Time Password ( OTP ) from Make My Buddy is ${otp}`;
   const mobileNumber = mobile.startsWith('+') ? mobile.slice(1,) : mobile;
 
-  const sessionId = Math.random().toString(36).substring(7);
-  const url = `http://api.whatsms.in/api/sendMessage.php?token=${process.env.WHATSMS_TOKEN}&message=${message}&mobile=${mobileNumber}&sessionId=${sessionId}&docUrl=${process.env.LOGO_IMAGE_URL}&msgType=img
-`
-  const response = await fetch(url);
+  const response = await fetch('https://api.httpsms.com/v1/messages/send', {
+    method: 'POST',
+    headers: {
+      "x-api-Key": process.env.HTTPSMS_API_KEY || '',
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      "content": message,
+      "encrypted": false,
+      "from": process.env.MY_MOBILE_NUMBER || '',
+      "to": mobileNumber
+    })
+  });
+
   const data = await response.json();
-  if(!response.ok || data.status !== "SUCCESS") {
-    throw new AppError('Error to send SMS',500);
-  }
+  console.log("Messages Send successfully ",data);
 }
 
 
-const handleOtp = async (mobile: string) => {
+const handleOtp = async (mobile: string, username: string) => {
   const generatedOtp = generateOtp();
+  console.log(`Generated Otp for ${mobile} is  ${generatedOtp}`);
   await Promise.all([
-    sendOtp(mobile , parseInt(generatedOtp)),
-    setMobileAndOtp(mobile, generatedOtp)
+    sendOtp(mobile, parseInt(generatedOtp)),
+    setUsernameAndOtp(username, generatedOtp)
   ]);
 }
 

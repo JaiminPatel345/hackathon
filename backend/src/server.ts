@@ -17,7 +17,11 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 4000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(cors())
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
 
 
 // Database connections
@@ -57,10 +61,9 @@ const startServer = async () => {
     app.use(errorHandler);
 
     // Start server
-    const server = app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server started on port ${PORT}`);
     });
-
     // Graceful shutdown
     process.on('SIGTERM', () => {
       console.log('SIGTERM received. Shutting down gracefully');
