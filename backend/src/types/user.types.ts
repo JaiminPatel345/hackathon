@@ -10,16 +10,19 @@ export interface IUser {
     title: string;
     target: string;
     year: number;
-    level: number;
+    level: IGoalLevel;
   };
   interests: string[];
   buddy:mongoose.Types.ObjectId;
   buddies:mongoose.Types.ObjectId[];
   blockedUsers:mongoose.Types.ObjectId[];
   pvsBuddy:mongoose.Types.ObjectId[];
-  profile:{
-    url: string;
-    public_id: string;
-  };
+  avatar:string;
   isMobileVerified: boolean;
+}
+
+export enum IGoalLevel {
+  EXPERT = "EXPERT",        // Very skilled and experienced
+  INTERMEDIATE = "INTERMEDIATE", // Decent skill but still learning
+  BEGINNER = "BEGINNER",    // Just starting out
 }

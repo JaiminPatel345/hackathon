@@ -5,9 +5,10 @@ import connectDB from "./configs/database.js";
 import cors from 'cors'
 
 // Import routes
-import authRouter from './routes/authRoute.js';
+import authRouter from './routes/auth.route.js';
 import {CustomErrorHandler} from './types/server.types.js';
 import {formatResponse} from "./types/custom.types.js";
+import userRouter from "./routes/user.route.js";
 
 
 // Create Express app
@@ -23,6 +24,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
+declare global {
+  namespace Express {
+    interface Request {
+      username?: string;
+    }
+  }
+}
 
 // Database connections
 const startServer = async () => {
@@ -35,6 +43,7 @@ const startServer = async () => {
 
 
     // Routes
+    app.use('/user', userRouter)
     app.use('/auth', authRouter);
 
     // Health check route
