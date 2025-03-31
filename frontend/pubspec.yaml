@@ -23,6 +23,8 @@ dependencies:
   http:
   shared_preferences:
   google_fonts:
+  image_picker:
+  country_code_picker:
 
 dev_dependencies:
   flutter_test:

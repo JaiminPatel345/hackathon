@@ -8,6 +8,7 @@ class MyTextfield extends StatefulWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final bool isRequired;
 
   const MyTextfield({
     super.key,
@@ -18,6 +19,7 @@ class MyTextfield extends StatefulWidget {
     this.controller,
     this.keyboardType,
     this.validator,
+    required this.isRequired,
   });
 
   @override
@@ -97,7 +99,7 @@ class _MyTextfieldState extends State<MyTextfield>
             focusNode: _focusNode,
             obscureText: widget.obsText ? _obscureText : false,
             decoration: InputDecoration(
-              hintText: widget.hintText,
+              hintText: widget.hintText + (widget.isRequired ? '*' : ''),
               prefixIcon:
                   widget.prefixIcon != null
                       ? Icon(

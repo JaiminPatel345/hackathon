@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/components/my_button.dart';
 import 'package:frontend/components/my_textfield.dart';
-import 'package:frontend/screens/mobile_verify.dart' show OtpVerificationScreen;
+import 'package:frontend/screens/Auth/mobile_verify.dart' show OtpVerificationScreen, OtpVerificationType;
+import 'package:frontend/screens/Auth/new_password_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
@@ -9,9 +10,9 @@ class ForgotPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
+    return SafeArea(
+      child: Scaffold(
+        body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -32,7 +33,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 50),
-              MyTextfield(hintText: 'Mobile Number', obsText: false),
+              MyTextfield(hintText: 'Mobile Number', obsText: false, isRequired: true,),
               SizedBox(height: 25),
               MyButton(
                 text: "Send OTP",
@@ -42,7 +43,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder:
                           (context) =>
-                              OtpVerificationScreen(mobileNumber: '9313343975'),
+                              OtpVerificationScreen(mobileNumber: '9313343975', verificationType: OtpVerificationType.passwordReset,),
                     ),
                   );
                 },
