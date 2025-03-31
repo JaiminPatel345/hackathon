@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/my_textfield.dart';
 import 'package:frontend/screens/Auth/mobile_verify.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import '../../components/my_button.dart';
+import '../../models/user_model.dart';
+import '../../services/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -19,12 +22,19 @@ class _SignupScreenState extends State<SignupScreen>
 
   // Text controllers for form fields
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
-  // final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  // Country code state
+  String _selectedCountryCode = '+91';
+
+  // Auth service
+  final AuthService _authService = AuthService();
 
   bool _isRegistering = false;
   bool _termsAccepted = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -57,35 +67,97 @@ class _SignupScreenState extends State<SignupScreen>
   void dispose() {
     _animationController.dispose();
     _nameController.dispose();
+    _usernameController.dispose();
     _mobileController.dispose();
-    // _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _handleSignup() {
-    // Basic validation
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  bool _validateForm() {
+    // Reset error message
+    setState(() {
+      _errorMessage = null;
+    });
+
+    // Validate all required fields
     if (_nameController.text.isEmpty ||
+        _usernameController.text.isEmpty ||
         _mobileController.text.isEmpty ||
-        // _emailController.text.isEmpty ||
         _passwordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all fields'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      _showErrorSnackBar('Please fill in all fields');
+      return false;
     }
 
+    // Validate terms acceptance
     if (!_termsAccepted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please accept the Terms of Service'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      _showErrorSnackBar('Please accept the Terms of Service');
+      return false;
+    }
+
+    // Validate username format (alphanumeric only)
+    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(_usernameController.text)) {
+      _showErrorSnackBar('Username can only contain letters, numbers, and underscores');
+      return false;
+    }
+
+    // Validate password strength
+    if (_passwordController.text.length < 6) {
+      _showErrorSnackBar('Password must be at least 6 characters long');
+      return false;
+    }
+
+    // Validate mobile number format
+    String mobileNumber = _mobileController.text.trim();
+    if (!RegExp(r'^[0-9]{6,15}$').hasMatch(mobileNumber)) {
+      _showErrorSnackBar('Please enter a valid mobile number');
+      return false;
+    }
+
+    return true;
+  }
+
+  // Send OTP method
+  Future<bool> _sendOtp(String mobileNumber) async {
+    try {
+      // Call the API to send OTP
+      final response = await _authService.sendOtp(mobileNumber);
+
+      if (response.success) {
+        _showSuccessSnackBar('OTP sent successfully');
+        return true;
+      } else {
+        _showErrorSnackBar(response.message);
+        return false;
+      }
+    } catch (e) {
+      _showErrorSnackBar('Failed to send OTP: ${e.toString()}');
+      return false;
+    }
+  }
+
+  void _handleSignup() async {
+    // Validate form inputs
+    if (!_validateForm()) {
       return;
     }
 
@@ -93,23 +165,50 @@ class _SignupScreenState extends State<SignupScreen>
       _isRegistering = true;
     });
 
-    // Simulate signup process
-    Future.delayed(const Duration(seconds: 2), () {
+    try {
+      // Combine country code with mobile number
+      String mobileNumber = _selectedCountryCode + _mobileController.text.trim();
+
+      // Create user model
+      final user = UserModel(
+        name: _nameController.text.trim(),
+        username: _usernameController.text.trim(),
+        password: _passwordController.text,
+        mobile: mobileNumber,
+      );
+
+      // Register user first
+      final registerResponse = await _authService.register(user);
+
+      // Handle registration response
+      if (registerResponse.success) {
+        // Now send OTP after successful registration
+        final otpSent = await _sendOtp(mobileNumber);
+
+        if (otpSent && mounted) {
+          // Navigate to OTP verification screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpVerificationScreen(
+                mobileNumber: mobileNumber,
+                verificationType: OtpVerificationType.profileSetup,
+              ),
+            ),
+          );
+        }
+      } else {
+        _showErrorSnackBar(registerResponse.message);
+      }
+    } catch (e) {
+      _showErrorSnackBar('Registration failed: ${e.toString()}');
+    } finally {
       if (mounted) {
         setState(() {
           _isRegistering = false;
         });
-
-        // Here you would navigate to the next screen after successful registration
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => OtpVerificationScreen(mobileNumber: '9313343975', verificationType: OtpVerificationType.profileSetup,),
-          ),
-        );
       }
-    });
+    }
   }
 
   @override
@@ -148,7 +247,7 @@ class _SignupScreenState extends State<SignupScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 20),
-      
+
                         // Title
                         Text(
                           "Create Account",
@@ -158,9 +257,9 @@ class _SignupScreenState extends State<SignupScreen>
                             color: Colors.black87,
                           ),
                         ),
-      
+
                         const SizedBox(height: 8),
-      
+
                         // Subtitle
                         Text(
                           "Sign up to get started",
@@ -169,9 +268,36 @@ class _SignupScreenState extends State<SignupScreen>
                             color: Colors.black54,
                           ),
                         ),
-      
+
                         const SizedBox(height: 40),
-      
+
+                        // Error message (if any)
+                        if (_errorMessage != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.error_outline, color: Colors.red),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _errorMessage!,
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+
                         // Full Name TextField
                         MyTextfield(
                           hintText: 'Full Name',
@@ -182,47 +308,97 @@ class _SignupScreenState extends State<SignupScreen>
                           keyboardType: TextInputType.name,
                           isRequired: true,
                         ),
-      
+
                         const SizedBox(height: 20),
-      
-                        // Mobile Number TextField
+
+                        // Username TextField
                         MyTextfield(
-                          hintText: 'Mobile Number',
+                          hintText: 'Username',
                           obsText: false,
-                          prefixIcon: Icons.phone_android_outlined,
+                          prefixIcon: Icons.alternate_email,
                           accentColor: primaryColor,
-                          controller: _mobileController,
-                          keyboardType: TextInputType.phone,
+                          controller: _usernameController,
+                          keyboardType: TextInputType.text,
                           isRequired: true,
                         ),
-      
-                        // const SizedBox(height: 20),
-      
-                        // Email TextField
-                        // MyTextfield(
-                        //   hintText: 'Email Address',
-                        //   obsText: false,
-                        //   prefixIcon: Icons.email_outlined,
-                        //   accentColor: primaryColor,
-                        //   controller: _emailController,
-                        //   keyboardType: TextInputType.emailAddress,
-                        // ),
-      
+
                         const SizedBox(height: 20),
-      
+
+                        // Mobile Number TextField with Country Code Picker
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            children: [
+                              // Country Code Picker
+                              CountryCodePicker(
+                                onChanged: (CountryCode countryCode) {
+                                  setState(() {
+                                    _selectedCountryCode = countryCode.dialCode ?? '+91';
+                                  });
+                                },
+                                initialSelection: 'IN',
+                                favorite: const ['IN', 'US', 'GB', 'CA', 'AU'],
+                                showCountryOnly: false,
+                                showOnlyCountryWhenClosed: false,
+                                alignLeft: false,
+                                padding: const EdgeInsets.all(8),
+                                textStyle: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                ),
+                              ),
+
+                              // Vertical divider
+                              Container(
+                                height: 30,
+                                width: 1,
+                                color: Colors.grey.shade300,
+                              ),
+
+                              // Mobile number input field
+                              Expanded(
+                                child: TextField(
+                                  controller: _mobileController,
+                                  keyboardType: TextInputType.phone,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    color: Colors.black87,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: 'Mobile Number',
+                                    hintStyle: TextStyle(color: Colors.grey.shade500),
+                                    border: InputBorder.none,
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                    isDense: true,
+                                    prefixIcon: Icon(
+                                      Icons.phone_android_outlined,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
                         // Password TextField with toggle visibility
                         MyTextfield(
                           hintText: 'Password',
                           obsText: true,
-                          // This will trigger the eye icon
                           prefixIcon: Icons.lock_outline,
                           accentColor: primaryColor,
                           controller: _passwordController,
                           isRequired: true,
                         ),
-      
+
                         const SizedBox(height: 40),
-      
+
                         // Privacy Policy & Terms
                         Row(
                           children: [
@@ -254,9 +430,9 @@ class _SignupScreenState extends State<SignupScreen>
                             ),
                           ],
                         ),
-      
+
                         const SizedBox(height: 30),
-      
+
                         // Sign Up Button
                         MyButton(
                           text: "Send OTP",
@@ -265,9 +441,9 @@ class _SignupScreenState extends State<SignupScreen>
                           isLoading: _isRegistering,
                           icon: Icons.arrow_forward,
                         ),
-      
+
                         const SizedBox(height: 30),
-      
+
                         // Login option
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -288,7 +464,7 @@ class _SignupScreenState extends State<SignupScreen>
                             ),
                           ],
                         ),
-      
+
                         const SizedBox(height: 30),
                       ],
                     ),

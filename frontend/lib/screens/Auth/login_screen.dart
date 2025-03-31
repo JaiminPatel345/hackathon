@@ -7,7 +7,7 @@ import 'package:frontend/screens/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import '../../components/my_button.dart';
-import '../../providers/auth_provider.dart';
+import '../../providers/auth_notifier.dart';
 
 enum LoginMethod { username, mobileNumber }
 
@@ -30,6 +30,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   LoginMethod _loginMethod = LoginMethod.username;
   final TextEditingController _mobileNumberController = TextEditingController();
   String _selectedCountryCode = '+1'; // Default country code
+  late bool isLoading = ref.watch(authNotifierProvider).isLoading;
 
   @override
   void initState() {
@@ -79,7 +80,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       }
     }
 
-    final authNotifier = ref.read(authProvider.notifier);
+    final authNotifier = ref.read(authNotifierProvider.notifier);
     final success = await authNotifier.login(
       _loginMethod == LoginMethod.username
           ? _usernameController.text
@@ -276,7 +277,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
     final screenHeight = MediaQuery.of(context).size.height;
-    final authState = ref.watch(authProvider);
+    final authState = ref.watch(authRepositoryProvider);
 
     return SafeArea(
       child: Scaffold(
@@ -411,7 +412,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                             text: "Log In",
                             onTap: _handleLogin,
                             accentColor: primaryColor,
-                            isLoading: authState.isLoading,
+                            isLoading: ref.watch(authNotifierProvider).isLoading,
                           ),
 
                           const Spacer(),

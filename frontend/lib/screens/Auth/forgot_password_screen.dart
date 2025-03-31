@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/components/my_button.dart';
 import 'package:frontend/components/my_textfield.dart';
 import 'package:frontend/screens/Auth/mobile_verify.dart' show OtpVerificationScreen, OtpVerificationType;
-import 'package:frontend/screens/Auth/new_password_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
