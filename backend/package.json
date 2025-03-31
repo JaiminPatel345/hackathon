@@ -26,6 +26,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
+    "android-sms-gateway": "^2.0.0",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.6.0",
     "cors": "^2.8.5",

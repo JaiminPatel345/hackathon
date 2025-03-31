@@ -17,9 +17,10 @@ const UserSchema = new Schema<IUser>({
     type: String,
     required: false,
   },
-  hashPassword:{
+  hashPassword: {
     type: String,
     required: true,
+    select: false,
   },
   mobile: {
     type: String,

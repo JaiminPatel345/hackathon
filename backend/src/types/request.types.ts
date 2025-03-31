@@ -10,3 +10,8 @@ export interface IRegisterRequest {
   password: string,
   mobile: string,
 }
+
+export interface IVerifyOtpRequest {
+  username: string,
+  givenOtp: string,
+}
