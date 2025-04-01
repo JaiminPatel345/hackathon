@@ -78,7 +78,7 @@ const UserSchema = new Schema<IUser>({
   timestamps: true,
 })
 
-UserSchema.index({ isActive: 1 });
+UserSchema.index({isActive: 1});
 
 const User: mongoose.Model<IUser> = mongoose.model('User', UserSchema);
 export default User;

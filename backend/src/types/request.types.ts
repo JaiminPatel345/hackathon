@@ -19,13 +19,12 @@ export interface IVerifyOtpRequest {
 }
 
 
-//------------Task
+//------------Task-------------
 export interface ICreateTaskRequest {
   content: string;
   category: TaskCategory;
   finishDate?: Date;
   isPrivate: boolean;
-  buddyId?: string;
   progress?: string;
 }
 
@@ -41,3 +40,6 @@ export interface IUpdateTaskRequest {
 export interface IToggleTaskStatusRequest {
   taskId: string;
 }
+
+
+//-------------User--------------
