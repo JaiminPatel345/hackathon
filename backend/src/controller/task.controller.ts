@@ -31,7 +31,7 @@ export const createTask = async (req: Request, res: Response) => {
     const buddyId = user.buddy;
 
     // Add buddy if specified and validate buddy exists
-    if (!isPrivate) {
+    if (!isPrivate && buddyId) {
       participants.push(buddyId);
     }
 
