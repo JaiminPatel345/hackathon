@@ -156,3 +156,97 @@ export const toggleBlockUser = async (req: Request, res: Response) => {
   }
 };
 
+// Remove current buddy (moves to previous buddies)
+export const removeBuddy = async (req: Request, res: Response) => {
+  try {
+    // Get current user
+    const currentUser = await getUserFromRequest(req);
+
+    if (!currentUser) {
+      res.status(401).json(formatResponse(false, "Authentication required"));
+      return;
+    }
+
+    // Check if the user has a buddy
+    if (!currentUser.buddy) {
+      res.status(400).json(formatResponse(false, "You don't have a buddy to remove"));
+      return;
+    }
+
+    // Store current buddy ID before removing
+    const currentBuddyId = currentUser.buddy;
+
+    // Update current user: move buddy to pvsBuddy and remove from buddy
+    await User.findByIdAndUpdate(
+        currentUser._id,
+        {
+          $addToSet: {pvsBuddy: currentBuddyId},
+          $set: {buddy: null}
+        }
+    );
+
+    const buddyUser = await User.findById(currentBuddyId);
+    if (buddyUser && buddyUser.buddy) {
+      await User.findByIdAndUpdate(
+          currentBuddyId,
+          {
+            $addToSet: {pvsBuddy: currentUser._id}, // Add to previous buddies
+            $set: {buddy: null} // Remove current buddy
+          }
+      );
+    }
+
+    res.status(200).json(formatResponse(true, "Buddy removed successfully"));
+    return;
+
+  } catch (error) {
+    console.log("Error removing buddy");
+    handleError(error, res);
+  }
+};
+
+// Remove a user from buddies list
+export const removeFromBuddies = async (req: Request, res: Response) => {
+  try {
+    const {userId} = req.body;
+
+    if (!userId) {
+      res.status(400).json(formatResponse(false, "User ID is required"));
+      return;
+    }
+
+    const currentUser = await getUserFromRequest(req);
+
+    await validateUserExists(userId);
+
+    const isBuddy = currentUser.buddies.some(
+        (buddyId: mongoose.Types.ObjectId) => buddyId.toString() === userId.toString()
+    );
+
+    if (!isBuddy) {
+      res.status(400).json(formatResponse(false, "User is not in your buddies list"));
+      return;
+    }
+
+    await User.findByIdAndUpdate(
+        currentUser._id,
+        {
+          $pull: {buddies: userId}
+        }
+    );
+
+    await User.findByIdAndUpdate(
+        userId,
+        {
+          $pull: {buddies: currentUser._id}
+        }
+    );
+
+    res.status(200).json(formatResponse(true, "User removed from buddies successfully"));
+    return;
+
+  } catch (error) {
+    console.log("Error removing user from buddies");
+    handleError(error, res);
+  }
+};

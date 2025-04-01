@@ -6,6 +6,7 @@ import handleError from "../utiles/handleError.js";
 import {
   getUserFromRequest,
   validateNotSelf,
+  validateRequestForBuddy,
   validateUserExists,
   validateUserNotBlocked
 } from "../utiles/userHelper.js";
@@ -54,15 +55,24 @@ export const sendBuddyRequest = async (req: Request, res: Response) => {
       return;
     }
 
-    // Create new request with 1 month expiry
-    const buddyRequest = new BuddyRequest({
-      sender: currentUser._id,
-      receiver: userId,
-      type,
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
-    });
-
-    await buddyRequest.save();
+    // Find and update any existing request regardless of status, or create a new one
+    const buddyRequest = await BuddyRequest.findOneAndUpdate(
+      {
+        sender: currentUser._id,
+        receiver: userId,
+        type
+      },
+      {
+        $set: {
+          status: 'pending',
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+        }
+      },
+      {
+        upsert: true,
+        new: true
+      }
+    );
 
     res.status(201).json(formatResponse(true, "Request sent successfully", {request: buddyRequest}));
 
@@ -71,22 +81,14 @@ export const sendBuddyRequest = async (req: Request, res: Response) => {
     handleError(error, res);
   }
 };
-
 // Accept buddy request
 export const acceptBuddyRequest = async (req: Request, res: Response) => {
   try {
     const {requestId} = req.body;
 
-    // Get current user
     const currentUser = await getUserFromRequest(req);
 
-    // Find the request
-    const buddyRequest = await BuddyRequest.findById(requestId);
-
-    if (!buddyRequest) {
-      res.status(404).json(formatResponse(false, "Request not found"));
-      return;
-    }
+    const buddyRequest = await validateRequestForBuddy(requestId);
 
     // Ensure the current user is the receiver
     if (buddyRequest.receiver.toString() !== currentUser._id.toString()) {
@@ -153,6 +155,7 @@ export const acceptBuddyRequest = async (req: Request, res: Response) => {
     handleError(error, res);
   }
 };
+
 // Reject buddy request
 export const rejectBuddyRequest = async (req: Request, res: Response) => {
   try {
@@ -167,6 +170,10 @@ export const rejectBuddyRequest = async (req: Request, res: Response) => {
     if (!buddyRequest) {
       res.status(404).json(formatResponse(false, "Request not found"));
       return;
+    }
+
+    if (buddyRequest.status === 'rejected' || buddyRequest.status === 'accepted') {
+      res.status(429).json(formatResponse(false, "Request has expired"));
     }
 
     // Ensure the current user is the receiver
