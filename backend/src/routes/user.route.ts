@@ -23,6 +23,9 @@ router.put('/update-profile', isAuthenticated, verifyUpdateUserRequest, userCont
 // User actions
 router.post('/toggle-block', isAuthenticated, verifyBuddyRequest, userController.toggleBlockUser);
 
+router.post('/remove-buddy', isAuthenticated, userController.removeBuddy);
+router.post('/remove-from-buddies', isAuthenticated, verifyBuddyRequest, userController.removeFromBuddies);
+
 // Buddy request routes
 router.post('/buddy-request/send', isAuthenticated, verifyBuddyRequestParams, buddyRequestController.sendBuddyRequest);
 router.post('/buddy-request/accept', isAuthenticated, buddyRequestController.acceptBuddyRequest);
@@ -32,10 +35,10 @@ router.get('/buddy-request/sent', isAuthenticated, buddyRequestController.getSen
 router.get('/buddy-request/received', isAuthenticated, buddyRequestController.getReceivedRequests);
 
 // Admin buddy management routes
-router.post('/make-buddy', isAuthenticated, isAdmin, adminController.adminMakeBuddy);
-router.post('/remove-buddy', isAuthenticated, isAdmin, adminController.adminRemoveBuddy);
-router.post('/add-to-buddies', isAuthenticated, isAdmin, adminController.adminAddToBuddies);
-router.post('/remove-from-buddies', isAuthenticated, isAdmin, adminController.adminRemoveFromBuddies);
+router.post('/admin/make-buddy', isAuthenticated, isAdmin, adminController.adminMakeBuddy);
+router.post('/admin/remove-buddy', isAuthenticated, isAdmin, adminController.adminRemoveBuddy);
+router.post('/admin/add-to-buddies', isAuthenticated, isAdmin, adminController.adminAddToBuddies);
+router.post('/admin/remove-from-buddies', isAuthenticated, isAdmin, adminController.adminRemoveFromBuddies);
 
 
 export default router;

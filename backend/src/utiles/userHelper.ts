@@ -1,7 +1,8 @@
 import { Request } from 'express';
 import mongoose from 'mongoose';
-import {AppError} from "../types/custom.types.js";
+import {AppError, formatResponse} from "../types/custom.types.js";
 import User from "../model/user.model.js";
+import BuddyRequest from "../model/buddyRequest.model.js";
 
 
 // Get user from the request object
@@ -57,3 +58,16 @@ export const validateTaskParticipant = (task: any, userId: mongoose.Types.Object
 
   return true;
 };
+
+export const validateRequestForBuddy = async (requestId:mongoose.Types.ObjectId) => {
+   const buddyRequest = await BuddyRequest.findById(requestId);
+
+    if (!buddyRequest) {
+      throw new AppError("Request not found" , 404)
+    }
+
+    if(buddyRequest.status === 'rejected' || buddyRequest.status === 'accepted') {
+      throw new AppError("Request has expired" , 429)
+    }
+    return buddyRequest;
+}
