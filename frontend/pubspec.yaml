@@ -27,6 +27,7 @@ dependencies:
   country_code_picker:
   pin_code_fields:
   percent_indicator:
+  cloudinary_public:
 
 dev_dependencies:
   flutter_test:

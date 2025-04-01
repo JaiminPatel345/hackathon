@@ -25,12 +25,14 @@ class _SignupScreenState extends State<SignupScreen>
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _mobileController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   // Country code state
   String _selectedCountryCode = '+91';
 
   // Auth service
-  final AuthService _authService = AuthService();
+  final ApiProvider _authService = ApiProvider();
 
   bool _isRegistering = false;
   bool _termsAccepted = true;
@@ -70,6 +72,7 @@ class _SignupScreenState extends State<SignupScreen>
     _usernameController.dispose();
     _mobileController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -103,7 +106,8 @@ class _SignupScreenState extends State<SignupScreen>
     if (_nameController.text.isEmpty ||
         _usernameController.text.isEmpty ||
         _mobileController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
       _showErrorSnackBar('Please fill in all fields');
       return false;
     }
@@ -116,13 +120,48 @@ class _SignupScreenState extends State<SignupScreen>
 
     // Validate username format (alphanumeric only)
     if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(_usernameController.text)) {
-      _showErrorSnackBar('Username can only contain letters, numbers, and underscores');
+      _showErrorSnackBar(
+        'Username can only contain letters, numbers, and underscores',
+      );
       return false;
     }
 
     // Validate password strength
-    if (_passwordController.text.length < 6) {
-      _showErrorSnackBar('Password must be at least 6 characters long');
+    final String password = _passwordController.text;
+    if (password.length < 8) {
+      _showErrorSnackBar('Password must be at least 8 characters long');
+      return false;
+    }
+
+    // Check for uppercase letter
+    if (!RegExp(r'[A-Z]').hasMatch(password)) {
+      _showErrorSnackBar('Password must contain at least one uppercase letter');
+      return false;
+    }
+
+    // Check for lowercase letter
+    if (!RegExp(r'[a-z]').hasMatch(password)) {
+      _showErrorSnackBar('Password must contain at least one lowercase letter');
+      return false;
+    }
+
+    // Check for number
+    if (!RegExp(r'[0-9]').hasMatch(password)) {
+      _showErrorSnackBar('Password must contain at least one number');
+      return false;
+    }
+
+    // Check for special character
+    if (!RegExp(r'[!@#$%^&*()_\-+=<>?/\[\]{}]').hasMatch(password)) {
+      _showErrorSnackBar(
+        'Password must contain at least one special character',
+      );
+      return false;
+    }
+
+    // Validate passwords match
+    if (_passwordController.text != _confirmPasswordController.text) {
+      _showErrorSnackBar('Passwords do not match');
       return false;
     }
 
@@ -136,27 +175,7 @@ class _SignupScreenState extends State<SignupScreen>
     return true;
   }
 
-  // Send OTP method
-  Future<bool> _sendOtp(String mobileNumber) async {
-    try {
-      // Call the API to send OTP
-      final response = await _authService.sendOtp(mobileNumber);
-
-      if (response.success) {
-        _showSuccessSnackBar('OTP sent successfully');
-        return true;
-      } else {
-        _showErrorSnackBar(response.message);
-        return false;
-      }
-    } catch (e) {
-      _showErrorSnackBar('Failed to send OTP: ${e.toString()}');
-      return false;
-    }
-  }
-
   void _handleSignup() async {
-    // Validate form inputs
     if (!_validateForm()) {
       return;
     }
@@ -166,10 +185,9 @@ class _SignupScreenState extends State<SignupScreen>
     });
 
     try {
-      // Combine country code with mobile number
       String mobileNumber = _selectedCountryCode + _mobileController.text.trim();
+      print("Mobile Number: $mobileNumber");
 
-      // Create user model
       final user = UserModel(
         name: _nameController.text.trim(),
         username: _usernameController.text.trim(),
@@ -177,16 +195,11 @@ class _SignupScreenState extends State<SignupScreen>
         mobile: mobileNumber,
       );
 
-      // Register user first
-      final registerResponse = await _authService.register(user);
+      final registerResponse = await _authService.registerUser(user);
+      print("Registration Response: ${registerResponse.success}");
 
-      // Handle registration response
       if (registerResponse.success) {
-        // Now send OTP after successful registration
-        final otpSent = await _sendOtp(mobileNumber);
-
-        if (otpSent && mounted) {
-          // Navigate to OTP verification screen
+        if (mounted) {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -210,6 +223,7 @@ class _SignupScreenState extends State<SignupScreen>
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -255,17 +269,6 @@ class _SignupScreenState extends State<SignupScreen>
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
-                          ),
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        // Subtitle
-                        Text(
-                          "Sign up to get started",
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            color: Colors.black54,
                           ),
                         ),
 
@@ -336,7 +339,8 @@ class _SignupScreenState extends State<SignupScreen>
                               CountryCodePicker(
                                 onChanged: (CountryCode countryCode) {
                                   setState(() {
-                                    _selectedCountryCode = countryCode.dialCode ?? '+91';
+                                    _selectedCountryCode =
+                                        countryCode.dialCode ?? '+91';
                                   });
                                 },
                                 initialSelection: 'IN',
@@ -368,10 +372,15 @@ class _SignupScreenState extends State<SignupScreen>
                                     color: Colors.black87,
                                   ),
                                   decoration: InputDecoration(
-                                    hintText: 'Mobile Number',
-                                    hintStyle: TextStyle(color: Colors.grey.shade500),
+                                    hintText: 'Mobile Number *',
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey.shade500,
+                                    ),
                                     border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 16,
+                                    ),
                                     isDense: true,
                                     prefixIcon: Icon(
                                       Icons.phone_android_outlined,
@@ -387,13 +396,39 @@ class _SignupScreenState extends State<SignupScreen>
 
                         const SizedBox(height: 20),
 
-                        // Password TextField with toggle visibility
+                        // Password TextField
                         MyTextfield(
                           hintText: 'Password',
                           obsText: true,
                           prefixIcon: Icons.lock_outline,
                           accentColor: primaryColor,
                           controller: _passwordController,
+                          isRequired: true,
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        // Password requirements
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Text(
+                            "Password must contain at least 8 characters, including uppercase, lowercase, number and special character",
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Confirm Password TextField
+                        MyTextfield(
+                          hintText: 'Confirm Password',
+                          obsText: true,
+                          prefixIcon: Icons.lock_outline,
+                          accentColor: primaryColor,
+                          controller: _confirmPasswordController,
                           isRequired: true,
                         ),
 
@@ -435,7 +470,7 @@ class _SignupScreenState extends State<SignupScreen>
 
                         // Sign Up Button
                         MyButton(
-                          text: "Send OTP",
+                          text: "Sign Up",
                           onTap: _handleSignup,
                           accentColor: primaryColor,
                           isLoading: _isRegistering,
@@ -464,7 +499,6 @@ class _SignupScreenState extends State<SignupScreen>
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 30),
                       ],
                     ),

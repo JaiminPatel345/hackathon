@@ -1,19 +1,27 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/screens/home_screen.dart' show HomeScreen;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../components/my_button.dart';
-import '../../components/my_textfield.dart';
+import '../components/my_button.dart';
+import '../components/my_textfield.dart';
+import '../models/profile_model.dart';
+import '../providers/profile_provider.dart';
 
-class ProfileSetup extends StatefulWidget {
-  const ProfileSetup({super.key});
+class ProfileSetup extends ConsumerStatefulWidget {
+  final String userId;
+
+  const ProfileSetup({
+    required this.userId,
+    super.key,
+  });
 
   @override
-  State<ProfileSetup> createState() => _ProfileSetupState();
+  ConsumerState<ProfileSetup> createState() => _ProfileSetupState();
 }
 
-class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderStateMixin {
+class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerProviderStateMixin {
   // Animation controllers
   late AnimationController _animationController;
   Animation<double>? _fadeAnimation;
@@ -21,6 +29,7 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
 
   // Form controllers
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _targetController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
@@ -31,7 +40,7 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
   final ImagePicker _picker = ImagePicker();
 
   // Level selection
-  final List<String> _levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
+  final List<String> _levels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'];
   String? _selectedLevel;
 
   // Interests selection
@@ -68,6 +77,12 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic),
     );
 
+    // Set default year to current year
+    _yearController.text = DateTime.now().year.toString();
+
+    // Set default level
+    _selectedLevel = _levels.first;
+
     // Start animations when screen loads
     _animationController.forward();
   }
@@ -99,13 +114,15 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error picking image: $e'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error picking image: $e'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 
@@ -144,8 +161,8 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
     );
   }
 
-  // Save profile data
-  void _saveProfile() {
+  // Save profile data using Riverpod state management
+  Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
       if (_profileImage == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -184,37 +201,80 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
         _isSaving = true;
       });
 
-      // Simulate saving profile
-      Future.delayed(const Duration(seconds: 2), () {
+      try {
+        // Create Goal object
+        final goal = Goal(
+          title: _titleController.text,
+          target: _targetController.text,
+          year: int.parse(_yearController.text),
+          level: _selectedLevel!,
+        );
+
+        // Create Profile object
+        final profile = Profile(
+          name: _nameController.text,
+          interests: _selectedInterests,
+          avatar: '', // This will be updated by the service after image upload
+          goal: goal,
+        );
+
+        // Save profile using Riverpod provider
+        final success = await ref.read(profileProvider.notifier)
+            .saveProfile(profile, _profileImage!);
+
         if (mounted) {
           setState(() {
             _isSaving = false;
           });
 
-          // TODO: Save profile data to database or state management
+          if (success) {
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile setup completed successfully!'),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
 
-          // Show success message
+            // Navigate to next screen
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          } else {
+            // Show error message
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Failed to save profile. Please try again.'),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _isSaving = false;
+          });
+
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profile setup completed successfully!'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: Text('Error: $e'),
+              backgroundColor: Colors.red,
               behavior: SnackBarBehavior.floating,
             ),
           );
-
-          // Navigate to next screen
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
         }
-      });
+      }
     }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    _nameController.dispose();
     _titleController.dispose();
     _targetController.dispose();
     _yearController.dispose();
@@ -226,6 +286,24 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
+
+    // Listen to profile state changes
+    ref.listen<AsyncValue<Profile>>(
+      profileProvider,
+          (_, state) {
+        state.whenOrNull(
+          error: (error, stackTrace) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error: $error'),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          },
+        );
+      },
+    );
 
     return SafeArea(
       child: Scaffold(
@@ -261,7 +339,7 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 20),
-      
+
                           // Title
                           Text(
                             "Profile Setup",
@@ -271,9 +349,9 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                               color: Colors.black87,
                             ),
                           ),
-      
+
                           const SizedBox(height: 8),
-      
+
                           // Subtitle
                           Text(
                             "Set up your profile to get a personalized experience",
@@ -282,9 +360,9 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                               color: Colors.black54,
                             ),
                           ),
-      
+
                           const SizedBox(height: 40),
-      
+
                           // Profile Image
                           Center(
                             child: Stack(
@@ -342,8 +420,9 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                               ],
                             ),
                           ),
-                          const SizedBox(height: 40),
-      
+
+                          const SizedBox(height: 20),
+
                           // Educational Goal Section
                           Text(
                             "Educational Goal",
@@ -354,7 +433,7 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                             ),
                           ),
                           const SizedBox(height: 16),
-      
+
                           // Title Field
                           MyTextfield(
                             hintText: 'Title (e.g., JEE Mains, NEET)',
@@ -365,9 +444,9 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                             keyboardType: TextInputType.text,
                             isRequired: true,
                           ),
-      
+
                           const SizedBox(height: 20),
-      
+
                           // Target Field
                           MyTextfield(
                             hintText: 'Target (e.g., Under 3 digits rank)',
@@ -378,9 +457,9 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                             keyboardType: TextInputType.text,
                             isRequired: true,
                           ),
-      
+
                           const SizedBox(height: 20),
-      
+
                           // Year Field
                           MyTextfield(
                             hintText: 'Year (e.g., 2025)',
@@ -390,10 +469,25 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                             controller: _yearController,
                             keyboardType: TextInputType.number,
                             isRequired: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a year';
+                              }
+                              try {
+                                final year = int.parse(value);
+                                final currentYear = DateTime.now().year;
+                                if (year < currentYear) {
+                                  return 'Year must be $currentYear or later';
+                                }
+                              } catch (e) {
+                                return 'Please enter a valid year';
+                              }
+                              return null;
+                            },
                           ),
-      
+
                           const SizedBox(height: 20),
-      
+
                           // Level Dropdown
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -414,7 +508,7 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                                 return DropdownMenuItem(
                                   value: level,
                                   child: Text(
-                                    level,
+                                    level.substring(0, 1) + level.substring(1).toLowerCase(),
                                     style: GoogleFonts.poppins(),
                                   ),
                                 );
@@ -435,9 +529,9 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                               style: GoogleFonts.poppins(color: Colors.black87),
                             ),
                           ),
-      
+
                           const SizedBox(height: 32),
-      
+
                           // Interests Section
                           Text(
                             "Interests",
@@ -448,7 +542,7 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                             ),
                           ),
                           const SizedBox(height: 16),
-      
+
                           // Interest Tags Container
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -484,10 +578,10 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                                       );
                                     }).toList(),
                                   ),
-      
+
                                 if (_selectedInterests.isNotEmpty)
                                   const SizedBox(height: 10),
-      
+
                                 // Input field
                                 Row(
                                   children: [
@@ -532,7 +626,7 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                               ],
                             ),
                           ),
-      
+
                           // Suggestions
                           const SizedBox(height: 12),
                           Text(
@@ -570,9 +664,9 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                               );
                             }).toList(),
                           ),
-      
+
                           const SizedBox(height: 40),
-      
+
                           // Submit button
                           MyButton(
                             text: "Complete Setup",
@@ -581,7 +675,7 @@ class _ProfileSetupState extends State<ProfileSetup> with SingleTickerProviderSt
                             isLoading: _isSaving,
                             icon: Icons.check,
                           ),
-      
+
                           const SizedBox(height: 30),
                         ],
                       ),
