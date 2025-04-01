@@ -5,7 +5,6 @@ import {
   verifyLoginRequest, verifyOtpRequest,
   verifySignupRequest, verifyUpdateUserRequest
 } from "../utiles/verifyRequest/authRequest.js";
-import {isAuthenticated} from "../utiles/verifyRequest/isAuthenticated.js";
 
 router.post('/login',verifyLoginRequest, authController.loginUser)
 router.post('/register',verifySignupRequest, authController.registerUser)

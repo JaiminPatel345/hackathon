@@ -19,6 +19,7 @@ export interface IUser {
   pvsBuddy:mongoose.Types.ObjectId[];
   avatar:string;
   isMobileVerified: boolean;
+  isActive:boolean
 }
 
 export enum IGoalLevel {

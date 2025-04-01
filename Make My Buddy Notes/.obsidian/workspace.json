@@ -166,14 +166,14 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "7b2420ac6d0e8d7e",
+  "active": "5027fb31081fcb08",
   "lastOpenFiles": [
-    "Welcome.md",
-    "Schema/User.md",
+    "Features.md",
     "Schema/Task.md",
+    "Schema/User.md",
+    "Welcome.md",
     "2025-03-29.md",
     "Schema.md",
-    "Schema",
-    "Features.md"
+    "Schema"
   ]
 }
