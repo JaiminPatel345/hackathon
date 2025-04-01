@@ -16,7 +16,7 @@ class ApiResponse<T> {
 }
 
 class ApiProvider {
-  final String _baseUrl = 'http://192.168.101.172:4000'; // Use your local IP for physical devices
+  final String _baseUrl = 'http://192.168.101.172:4000';
 
   // Register user
   Future<ApiResponse> registerUser(UserModel user) async {

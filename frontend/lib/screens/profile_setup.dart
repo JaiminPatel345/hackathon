@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/screens/home_screen.dart' show HomeScreen;
+import 'package:frontend/screens/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../components/my_button.dart';
 import '../components/my_textfield.dart';
 import '../models/profile_model.dart';
 import '../providers/profile_provider.dart';
+import '../services/profile_service.dart';
 
 class ProfileSetup extends ConsumerStatefulWidget {
   final String userId;
@@ -52,8 +53,8 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
   final List<String> _selectedInterests = [];
   final FocusNode _interestFocusNode = FocusNode();
 
-  // Loading state
-  bool _isSaving = false;
+  // Local loading state
+  bool _isLocalLoading = false;
 
   @override
   void initState() {
@@ -164,41 +165,29 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
   // Save profile data using Riverpod state management
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
+      // Validate required fields
+      if (_nameController.text.trim().isEmpty) {
+        _showErrorSnackBar('Please enter your name');
+        return;
+      }
+
       if (_profileImage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please upload a profile image'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        _showErrorSnackBar('Please upload a profile image');
         return;
       }
 
       if (_selectedLevel == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select your level'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        _showErrorSnackBar('Please select your level');
         return;
       }
 
       if (_selectedInterests.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select at least one interest'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        _showErrorSnackBar('Please select at least one interest');
         return;
       }
 
       setState(() {
-        _isSaving = true;
+        _isLocalLoading = true;
       });
 
       try {
@@ -218,13 +207,13 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
           goal: goal,
         );
 
-        // Save profile using Riverpod provider
+        // Use the profileProvider with direct access to ProfileNotifier
         final success = await ref.read(profileProvider.notifier)
             .saveProfile(profile, _profileImage!);
 
         if (mounted) {
           setState(() {
-            _isSaving = false;
+            _isLocalLoading = false;
           });
 
           if (success) {
@@ -243,32 +232,28 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
               MaterialPageRoute(builder: (context) => const HomeScreen()),
             );
           } else {
-            // Show error message
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Failed to save profile. Please try again.'),
-                backgroundColor: Colors.red,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
+            _showErrorSnackBar('Failed to save profile. Please try again.');
           }
         }
       } catch (e) {
         if (mounted) {
           setState(() {
-            _isSaving = false;
+            _isLocalLoading = false;
           });
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: $e'),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          _showErrorSnackBar('Error: $e');
         }
       }
     }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -287,23 +272,11 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    // Listen to profile state changes
-    ref.listen<AsyncValue<Profile>>(
-      profileProvider,
-          (_, state) {
-        state.whenOrNull(
-          error: (error, stackTrace) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error: $error'),
-                backgroundColor: Colors.red,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-        );
-      },
-    );
+    // Watch the profile provider to reactively update UI based on changes
+    final profileState = ref.watch(profileProvider);
+
+    // Determine if we're loading based on both local state and provider state
+    final bool isLoading = _isLocalLoading || profileState is AsyncLoading;
 
     return SafeArea(
       child: Scaffold(
@@ -362,6 +335,19 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
                           ),
 
                           const SizedBox(height: 40),
+
+                          // Name Field
+                          MyTextfield(
+                            hintText: 'Your Full Name',
+                            obsText: false,
+                            prefixIcon: Icons.person,
+                            accentColor: primaryColor,
+                            controller: _nameController,
+                            keyboardType: TextInputType.name,
+                            isRequired: true,
+                          ),
+
+                          const SizedBox(height: 20),
 
                           // Profile Image
                           Center(
@@ -667,12 +653,33 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
 
                           const SizedBox(height: 40),
 
+                          // Error message for provider errors
+                          profileState.maybeWhen(
+                            error: (error, _) => Container(
+                              padding: const EdgeInsets.all(12),
+                              margin: const EdgeInsets.only(bottom: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.red.shade300),
+                              ),
+                              child: Text(
+                                'Error: $error',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.red.shade800,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            orElse: () => const SizedBox.shrink(),
+                          ),
+
                           // Submit button
                           MyButton(
                             text: "Complete Setup",
                             onTap: _saveProfile,
                             accentColor: primaryColor,
-                            isLoading: _isSaving,
+                            isLoading: isLoading,
                             icon: Icons.check,
                           ),
 

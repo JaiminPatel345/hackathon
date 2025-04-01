@@ -16,7 +16,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authNotifierProvider);
     final bool isAuthenticated = authState.isAuthenticated;
-    return MaterialApp(debugShowCheckedModeBanner: false, home: ProfileSetup(userId: '1'),);
+    return MaterialApp(debugShowCheckedModeBanner: false, home: ProfileSetup(userId: 'example'));
     // return MaterialApp(debugShowCheckedModeBanner: false, home: isAuthenticated ? LoginScreen() : HomeScreen());
   }
 }

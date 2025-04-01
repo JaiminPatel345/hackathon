@@ -1,12 +1,12 @@
  class UserModel {
-  final String? id;
+  final String? userId;
   final String name;
   final String username;
   final String password;
   final String mobile;
 
   UserModel({
-    this.id,
+    this.userId,
     required this.name,
     required this.username,
     required this.password,
@@ -15,7 +15,7 @@
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['_id'],
+      userId: json['_id'],
       name: json['name'],
       username: json['username'],
       password: json['password'] ?? '',

@@ -1,89 +1,60 @@
-// lib/providers/profile_provider.dart
-
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/profile_model.dart';
 import '../services/profile_service.dart';
 
-// State notifier for profile state
-class ProfileNotifier extends StateNotifier<AsyncValue<Profile>> {
-  final ProfileService _profileService = ProfileService();
+// Provider for the ProfileService
+final profileServiceProvider = Provider<ProfileService>((ref) {
+  return ProfileService();
+});
 
-  ProfileNotifier() : super(AsyncValue.data(Profile.empty()));
+// State notifier for Profile
+class ProfileNotifier extends StateNotifier<AsyncValue<Profile?>> {
+  final ProfileService _profileService;
+  final String userId;
 
-  // Create or update profile
-  Future<bool> saveProfile(Profile profile, File imageFile) async {
+  ProfileNotifier(this._profileService, this.userId) : super(const AsyncValue.data(null));
+
+  // Save profile with image
+  Future<bool> saveProfile(Profile profile, File profileImage) async {
     try {
+      // Show loading state
       state = const AsyncValue.loading();
 
-      final savedProfile = await _profileService.createProfile(profile, imageFile);
+      // Call service to upload image and update profile
+      final success = await _profileService.updateProfile(profile, profileImage, userId);
 
-      if (savedProfile != null) {
-        state = AsyncValue.data(savedProfile);
-        return true;
-      } else {
-        state = AsyncValue.error(
-          'Failed to save profile',
-          StackTrace.current,
-        );
-        return false;
-      }
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-      return false;
-    }
-  }
-
-  // Fetch user profile
-  Future<void> fetchProfile(String userId) async {
-    try {
-      state = const AsyncValue.loading();
-
-      final profile = await _profileService.getProfile(userId);
-
-      if (profile != null) {
+      if (success) {
+        // Update state with the new profile
         state = AsyncValue.data(profile);
-      } else {
-        state = AsyncValue.error(
-          'Failed to fetch profile',
-          StackTrace.current,
-        );
       }
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-    }
-  }
 
-  // Update profile
-  Future<bool> updateProfile(String userId, Profile profile, {File? imageFile}) async {
-    try {
-      state = const AsyncValue.loading();
-
-      final updatedProfile = await _profileService.updateProfile(
-        userId,
-        profile,
-        imageFile: imageFile,
-      );
-
-      if (updatedProfile != null) {
-        state = AsyncValue.data(updatedProfile);
-        return true;
-      } else {
-        state = AsyncValue.error(
-          'Failed to update profile',
-          StackTrace.current,
-        );
-        return false;
-      }
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
+      return success;
+    } catch (e, stackTrace) {
+      // Set error state
+      state = AsyncValue.error(e, stackTrace);
       return false;
     }
   }
 }
 
-// Provider for profile state
-final profileProvider = StateNotifierProvider<ProfileNotifier, AsyncValue<Profile>>(
-      (ref) => ProfileNotifier(),
-);
+// Provider for the ProfileNotifier
+final profileProvider = StateNotifierProvider<ProfileNotifier, AsyncValue<Profile?>>((ref) {
+  final profileService = ref.watch(profileServiceProvider);
+  // You need to get the userId from somewhere - this could be from a user auth provider
+  final userId = ref.read(authProvider).user?.uid ?? '';
+
+  return ProfileNotifier(profileService, userId);
+});
+
+// This is a mock auth provider - replace with your actual auth provider
+final authProvider = Provider((ref) => AuthService());
+
+class AuthService {
+  User? get user => User(uid: 'mock-user-id');
+}
+
+class User {
+  final String uid;
+  User({required this.uid});
+}

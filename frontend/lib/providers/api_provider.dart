@@ -1,6 +1,5 @@
 // providers/auth_provider.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/providers/profile_provider.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 

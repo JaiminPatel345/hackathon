@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/profile_setup.dart';
+import 'package:frontend/screens/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../components/my_button.dart';
@@ -41,7 +41,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
   @override
   void initState() {
     super.initState();
-
     // Set up animations
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
@@ -151,24 +150,40 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
     });
 
     try {
-      // Just submit the OTP, verification is handled by backend
-      if (widget.verificationType == OtpVerificationType.passwordReset) {
-        // Navigate to password reset screen
-        Navigator.pushReplacementNamed(
+      final response = await _authService.verifyOtp(
+          widget.mobileNumber,
+          _otpController.text
+      );
+
+      if (response.success) {
+        if (widget.verificationType == OtpVerificationType.passwordReset) {
+          // Navigate to password reset screen
+          Navigator.pushReplacementNamed(
+              context,
+              '/reset-password',
+              arguments: {
+                'mobileNumber': widget.mobileNumber,
+                'otp': _otpController.text
+              }
+          );
+        } else {
+          // For profile setup, get the userId from the response
+          final String userId = response.data['userId'] ?? '';
+
+          if (userId.isEmpty) {
+            _showErrorSnackBar('User ID not found in response');
+            return;
+          }
+
+          Navigator.push(
             context,
-            '/reset-password',
-            arguments: {
-              'mobileNumber': widget.mobileNumber,
-              'otp': _otpController.text
-            }
-        );
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+          );
+        }
       } else {
-        // For profile setup, navigate to home screen
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const ProfileSetup(userId: '1',)),
-              (route) => false,
-        );
+        _showErrorSnackBar(response.message);
       }
     } catch (e) {
       _showErrorSnackBar('Something went wrong: ${e.toString()}');
