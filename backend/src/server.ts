@@ -9,6 +9,7 @@ import authRouter from './routes/auth.route.js';
 import {CustomErrorHandler} from './types/server.types.js';
 import {formatResponse} from "./types/custom.types.js";
 import userRouter from "./routes/user.route.js";
+import taskRoute from "./routes/task.route.js";
 
 
 // Create Express app
@@ -43,6 +44,7 @@ const startServer = async () => {
 
 
     // Routes
+    app.use('/task',taskRoute)
     app.use('/user', userRouter)
     app.use('/auth', authRouter);
 

@@ -13,6 +13,6 @@
 | Buddies       | string [ ] ( user id [ ])                                                                    | N             |
 | blockedUsers  | " "                                                                                          | N             |
 | pvsBuddy      | " "                                                                                          | N             |
-| profile       | - url :  string,<br>- public_id : string,<br>                                                | profile . url |
-|               |                                                                                              |               |
+| avetar        | string<br>                                                                                   |               |
+| isActive      | boolean                                                                                      |               |
  
