@@ -21,6 +21,10 @@ export interface IUser {
   isMobileVerified: boolean;
   isActive:boolean;
   isAdmin:boolean;
+  communities:mongoose.Types.ObjectId[];
+  lastActive:Date;
+  status:string;
+  conversations:mongoose.Types.ObjectId[];
 }
 
 export enum IGoalLevel {
