@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import BuddyRequest from '../model/buddyRequest.model.js';
 import User from '../model/user.model.js';
-import {formatResponse} from "../types/custom.types.js";
+import {AppError, formatResponse} from "../types/custom.types.js";
 import handleError from "../utiles/handleError.js";
 import {
   getUserFromRequest,
@@ -28,6 +28,10 @@ export const sendBuddyRequest = async (req: Request, res: Response) => {
 
     // Check if target user is not blocked
     validateUserNotBlocked(currentUser, userId);
+
+    if(receiverUser.buddy){
+      throw new AppError("Receiver already have buddy",400);
+    }
 
     if (receiverUser.blockedUsers.some(
         (blockedId: mongoose.Types.ObjectId) => blockedId.toString() === currentUser._id.toString()
@@ -81,6 +85,7 @@ export const sendBuddyRequest = async (req: Request, res: Response) => {
     handleError(error, res);
   }
 };
+
 // Accept buddy request
 export const acceptBuddyRequest = async (req: Request, res: Response) => {
   try {

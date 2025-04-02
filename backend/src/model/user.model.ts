@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
 import {IGoalLevel, IUser} from "../types/user.types.js";
 
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
+// Enhanced User Schema with chat-related fields
 const UserSchema = new Schema<IUser>({
   name: {
     type: String,
@@ -13,12 +14,6 @@ const UserSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
-    trim: true,
-    lowercase: true
-  },
-  email: {
-    type: String,
-    required: false,
     trim: true,
     lowercase: true
   },
@@ -73,10 +68,33 @@ const UserSchema = new Schema<IUser>({
   isActive: {
     type: Boolean,
     default: true
-  }
+  },
+  communities: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Community',
+  }],
+  lastActive: {
+    type: Date,
+    default: Date.now
+  },
+  status: {
+    message: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    emoji: {
+      type: String,
+      default: ''
+    }
+  },
+  conversations: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Conversation'
+  }]
 }, {
   timestamps: true,
-})
+});
 
 UserSchema.index({isActive: 1});
 
