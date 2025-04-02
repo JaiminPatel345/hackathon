@@ -43,8 +43,13 @@ const taskSchema: Schema = new Schema<ITask>({
       message: 'Tasks must have either 1 or 2 participants'
     }
   },
-  progress:{
-    type:String,
+  progressOfMe: {
+    type: String,
+    default: "0"
+  },
+  progressOfBuddy: {
+    type: String,
+    default: "0"
   }
 }, {
   timestamps: true

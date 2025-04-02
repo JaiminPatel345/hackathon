@@ -32,7 +32,8 @@ const handleOtp = async (mobile: string, username: string) => {
   const generatedOtp = generateOtp();
   console.log(`Generated Otp for ${mobile} is  ${generatedOtp}`);
   await Promise.all([
-    sendOtp(mobile, parseInt(generatedOtp)),
+      //TODO: Remove when actual testing came
+    // sendOtp(mobile, parseInt(generatedOtp)),
     setUsernameAndOtp(username, generatedOtp)
   ]);
 }
