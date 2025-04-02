@@ -42,7 +42,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder:
                           (context) =>
-                              OtpVerificationScreen(mobileNumber: '9313343975', verificationType: OtpVerificationType.passwordReset,),
+                              OtpVerificationScreen(mobileNumber: '', verificationType: OtpVerificationType.passwordReset, username: 'karnav',),
                     ),
                   );
                 },

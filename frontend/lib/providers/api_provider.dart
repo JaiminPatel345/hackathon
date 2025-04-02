@@ -1,6 +1,6 @@
 // providers/auth_provider.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/providers/profile_provider.dart';
+import 'package:frontend/services/token_service.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 
@@ -124,6 +124,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(isLoading: false);
 
       if (apiResponse.success) {
+        final tokenService = TokenService();
+        await tokenService.getToken();
+        // final token = await tokenService.storeToken('token');
         return true;
       } else {
         state = state.copyWith(errorMessage: apiResponse.message);

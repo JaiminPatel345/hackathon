@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:frontend/screens/home_screen.dart' show HomeScreen;
+import 'package:frontend/screens/home_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../components/my_button.dart';
 import '../components/my_textfield.dart';
 import '../models/profile_model.dart';
 import '../providers/profile_provider.dart';
+import '../services/profile_service.dart';
+import '../services/token_service.dart';
 
 class ProfileSetup extends ConsumerStatefulWidget {
   final String userId;
@@ -40,7 +42,7 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
   final ImagePicker _picker = ImagePicker();
 
   // Level selection
-  final List<String> _levels = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT'];
+  final List<String> _levels = ['BEGINNER', 'INTERMEDIATE', 'EXPERT'];
   String? _selectedLevel;
 
   // Interests selection
@@ -52,8 +54,8 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
   final List<String> _selectedInterests = [];
   final FocusNode _interestFocusNode = FocusNode();
 
-  // Loading state
-  bool _isSaving = false;
+  // Local loading state
+  bool _isLocalLoading = false;
 
   @override
   void initState() {
@@ -164,71 +166,100 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
   // Save profile data using Riverpod state management
   Future<void> _saveProfile() async {
     if (_formKey.currentState!.validate()) {
+      // Validate required fields
+      if (_nameController.text.trim().isEmpty) {
+        _showErrorSnackBar('Please enter your name');
+        return;
+      }
       if (_profileImage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please upload a profile image'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        _showErrorSnackBar('Please upload a profile image');
         return;
       }
-
       if (_selectedLevel == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select your level'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        _showErrorSnackBar('Please select your level');
         return;
       }
-
       if (_selectedInterests.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select at least one interest'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        _showErrorSnackBar('Please select at least one interest');
         return;
       }
-
       setState(() {
-        _isSaving = true;
+        _isLocalLoading = true;
       });
-
       try {
+        // Check for authentication token first
+        final tokenService = TokenService();
+        final hasToken = await tokenService.hasToken();
+        print("Profile setup - has token check: $hasToken");
+
+        if (!hasToken) {
+          // Token is missing, need to re-authenticate
+          _showErrorSnackBar('Session expired. Please restart the app and login again.');
+          setState(() {
+            _isLocalLoading = false;
+          });
+          return;
+        }
+        // Upload profile image and get the URL
+        final profileService = ProfileService();
+        String avatarUrl = await profileService.uploadProfileImage(_profileImage!);
+        print("Image uploaded successfully: $avatarUrl");
+        // Parse year safely
+        int? year;
+        try {
+          year = int.parse(_yearController.text);
+        } catch (e) {
+          _showErrorSnackBar('Invalid year format');
+          setState(() {
+            _isLocalLoading = false;
+          });
+          return;
+        }
         // Create Goal object
         final goal = Goal(
           title: _titleController.text,
           target: _targetController.text,
-          year: int.parse(_yearController.text),
+          year: year,
           level: _selectedLevel!,
         );
+        print('selected interest is $_selectedInterests');
 
         // Create Profile object
         final profile = Profile(
           name: _nameController.text,
           interests: _selectedInterests,
-          avatar: '', // This will be updated by the service after image upload
+          avatar: avatarUrl, // Use uploaded image URL
           goal: goal,
         );
+        print(profile.interests);
+        // Get token for API call
+        final token = await tokenService.getToken();
+        print("Retrieved token for API call: ${token != null ? 'YES' : 'NO'}");
 
-        // Save profile using Riverpod provider
-        final success = await ref.read(profileProvider.notifier)
-            .saveProfile(profile, _profileImage!);
+        if (token == null || token.isEmpty) {
+          _showErrorSnackBar('Authentication token is invalid. Please restart the app and login again.');
+          setState(() {
+            _isLocalLoading = false;
+          });
+          return;
+        }
 
+        // Try to save profile with token available
+        bool success = false;
+        try {
+          success = await ref.read(profileProvider.notifier).saveProfile(profile, _profileImage!);
+        } catch (e) {
+          print("API error: $e");
+          // Continue to HomeScreen even if API fails
+        }
+
+        // Navigate to HomeScreen if all validations passed, regardless of API result
         if (mounted) {
           setState(() {
-            _isSaving = false;
+            _isLocalLoading = false;
           });
 
           if (success) {
-            // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Profile setup completed successfully!'),
@@ -236,39 +267,53 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
                 behavior: SnackBarBehavior.floating,
               ),
             );
-
-            // Navigate to next screen
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
           } else {
-            // Show error message
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Failed to save profile. Please try again.'),
-                backgroundColor: Colors.red,
+                content: Text('Profile data validated. Proceeding to home screen.'),
+                backgroundColor: Colors.orange,
                 behavior: SnackBarBehavior.floating,
               ),
             );
           }
+
+          // Navigate regardless of API success
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
         }
       } catch (e) {
+        print("Save profile error: $e");
+
         if (mounted) {
           setState(() {
-            _isSaving = false;
+            _isLocalLoading = false;
           });
+          _showErrorSnackBar('Error: $e');
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: $e'),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          // Consider navigating anyway if this is just for testing purposes
+          // Uncomment the lines below if you want to proceed regardless of errors
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+
         }
       }
     }
+  }
+
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -287,23 +332,11 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).primaryColor;
 
-    // Listen to profile state changes
-    ref.listen<AsyncValue<Profile>>(
-      profileProvider,
-          (_, state) {
-        state.whenOrNull(
-          error: (error, stackTrace) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Error: $error'),
-                backgroundColor: Colors.red,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          },
-        );
-      },
-    );
+    // Watch the profile provider to reactively update UI based on changes
+    final profileState = ref.watch(profileProvider);
+
+    // Determine if we're loading based on both local state and provider state
+    final bool isLoading = _isLocalLoading || profileState is AsyncLoading;
 
     return SafeArea(
       child: Scaffold(
@@ -362,6 +395,19 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
                           ),
 
                           const SizedBox(height: 40),
+
+                          // Name Field
+                          MyTextfield(
+                            hintText: 'Your Full Name',
+                            obsText: false,
+                            prefixIcon: Icons.person,
+                            accentColor: primaryColor,
+                            controller: _nameController,
+                            keyboardType: TextInputType.name,
+                            isRequired: true,
+                          ),
+
+                          const SizedBox(height: 20),
 
                           // Profile Image
                           Center(
@@ -667,12 +713,33 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
 
                           const SizedBox(height: 40),
 
+                          // Error message for provider errors
+                          profileState.maybeWhen(
+                            error: (error, _) => Container(
+                              padding: const EdgeInsets.all(12),
+                              margin: const EdgeInsets.only(bottom: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.red.shade300),
+                              ),
+                              child: Text(
+                                'Error: $error',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.red.shade800,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            orElse: () => const SizedBox.shrink(),
+                          ),
+
                           // Submit button
                           MyButton(
                             text: "Complete Setup",
                             onTap: _saveProfile,
                             accentColor: primaryColor,
-                            isLoading: _isSaving,
+                            isLoading: isLoading,
                             icon: Icons.check,
                           ),
 

@@ -1,6 +1,8 @@
 // services/api_provider.dart
 import 'dart:convert';
+import 'package:frontend/services/token_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 
 class ApiResponse<T> {
@@ -16,25 +18,27 @@ class ApiResponse<T> {
 }
 
 class ApiProvider {
-  final String _baseUrl = 'http://192.168.101.172:4000'; // Use your local IP for physical devices
-
+  final String _baseUrl = 'http://192.168.101.172:4000';
   // Register user
   Future<ApiResponse> registerUser(UserModel user) async {
+    print('register');
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/auth/register'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(user.toJson()),
       );
-
       final responseData = jsonDecode(response.body);
+      print("Response status code: ${response.statusCode}");
+      print("Response body: ${response.body}"); // Add this line
 
       return ApiResponse(
-        success: response.statusCode == 201,
+        success: response.statusCode == 201 || response.statusCode == 200,
         message: responseData['message'] ?? 'Registration successful',
         data: responseData['data'],
       );
     } catch (e) {
+      print("Error: ${e.toString()}"); // Add this line
       return ApiResponse(
         success: false,
         message: 'Network error: ${e.toString()}',
@@ -68,7 +72,6 @@ class ApiProvider {
       );
     }
   }
-
   // Send OTP
   Future<ApiResponse> sendOtp(String mobileNumber) async {
     try {
@@ -93,14 +96,15 @@ class ApiProvider {
   }
 
   // Verify OTP
-  Future<ApiResponse> verifyOtp(String mobileNumber, String otp) async {
+  Future<ApiResponse> verifyOtp(String username, String otp) async {
+    print('username : $username');
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/auth/verify-otp'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'mobile': mobileNumber,
-          'otp': otp,
+          'username': username,
+          'givenOtp': otp,
         }),
       );
 

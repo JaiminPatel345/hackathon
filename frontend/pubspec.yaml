@@ -28,6 +28,8 @@ dependencies:
   pin_code_fields:
   percent_indicator:
   cloudinary_public:
+  mime_type:
+  http_parser:
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,36 @@
-// lib/models/profile_model.dart
+class Profile {
+  String name;
+  List<String> interests;
+  String avatar;
+  Goal goal;
 
-import 'dart:convert';
+  Profile({
+    required this.name,
+    required this.interests,
+    this.avatar = '',
+    required this.goal,
+  });
+
+  // Convert Profile to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'interests': interests,
+      'avatar': avatar,
+      'goal': goal.toJson(),
+    };
+  }
+
+  // Create Profile from JSON
+  factory Profile.fromJson(Map<String, dynamic> json) {
+    return Profile(
+      name: json['name'],
+      interests: List<String>.from(json['interests']),
+      avatar: json['avatar'],
+      goal: Goal.fromJson(json['goal']),
+    );
+  }
+}
 
 class Goal {
   String title;
@@ -15,15 +45,7 @@ class Goal {
     required this.level,
   });
 
-  factory Goal.fromJson(Map<String, dynamic> json) {
-    return Goal(
-      title: json['title'] as String,
-      target: json['target'] as String,
-      year: json['year'] as int,
-      level: json['level'] as String,
-    );
-  }
-
+  // Convert Goal to JSON
   Map<String, dynamic> toJson() {
     return {
       'title': title,
@@ -32,54 +54,14 @@ class Goal {
       'level': level,
     };
   }
-}
 
-class Profile {
-  String name;
-  List<String> interests;
-  String avatar;
-  Goal goal;
-
-  Profile({
-    required this.name,
-    required this.interests,
-    required this.avatar,
-    required this.goal,
-  });
-
-  factory Profile.empty() {
-    return Profile(
-      name: '',
-      interests: [],
-      avatar: '',
-      goal: Goal(
-        title: '',
-        target: '',
-        year: DateTime.now().year,
-        level: 'BEGINNER',
-      ),
+  // Create Goal from JSON
+  factory Goal.fromJson(Map<String, dynamic> json) {
+    return Goal(
+      title: json['title'],
+      target: json['target'],
+      year: json['year'],
+      level: json['level'],
     );
-  }
-
-  factory Profile.fromJson(Map<String, dynamic> json) {
-    return Profile(
-      name: json['name'] as String,
-      interests: List<String>.from(json['interests'] as List),
-      avatar: json['avatar'] as String,
-      goal: Goal.fromJson(json['goal'] as Map<String, dynamic>),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'interests': interests,
-      'avatar': avatar,
-      'goal': goal.toJson(),
-    };
-  }
-
-  String toJsonString() {
-    return jsonEncode(toJson());
   }
 }

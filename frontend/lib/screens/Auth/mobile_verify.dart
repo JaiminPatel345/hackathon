@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/profile_setup.dart';
+import 'package:frontend/services/token_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../components/my_button.dart';
@@ -9,6 +11,7 @@ import '../../services/auth_service.dart';
 enum OtpVerificationType { passwordReset, profileSetup }
 
 class OtpVerificationScreen extends StatefulWidget {
+  final String username;
   final String mobileNumber;
   final OtpVerificationType verificationType;
 
@@ -16,6 +19,7 @@ class OtpVerificationScreen extends StatefulWidget {
     super.key,
     required this.mobileNumber,
     required this.verificationType,
+    required this.username,
   });
 
   @override
@@ -41,7 +45,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
   @override
   void initState() {
     super.initState();
-
     // Set up animations
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1200),
@@ -140,6 +143,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
     }
   }
 
+  // In OtpVerificationScreen.dart, update the _submitOtp method:
+
   Future<void> _submitOtp() async {
     if (_otpController.text.length != 4) {
       _showErrorSnackBar('Please enter a valid 4-digit OTP');
@@ -151,26 +156,64 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
     });
 
     try {
-      // Just submit the OTP, verification is handled by backend
-      if (widget.verificationType == OtpVerificationType.passwordReset) {
-        // Navigate to password reset screen
-        Navigator.pushReplacementNamed(
+      final response = await _authService.verifyOtp(
+          widget.username,
+          _otpController.text
+      );
+
+      print("OTP verification response: ${response.success}");
+
+      if (response.success) {
+        if (widget.verificationType == OtpVerificationType.passwordReset) {
+          // Password reset flow...
+        } else {
+          // Extract and validate user ID
+          final String userId = response.data['user']?['_id'] ?? '';
+          print("User ID from response: $userId");
+
+          if (userId.isEmpty) {
+            _showErrorSnackBar('User ID not found in response');
+            return;
+          }
+
+          // Extract and validate token
+          final String authToken = response.data['token'] ?? '';
+          print("Auth token from response: ${authToken.isNotEmpty ? 'PRESENT' : 'EMPTY'}");
+
+          if (authToken.isEmpty) {
+            _showErrorSnackBar('Authentication token not found in response');
+            return;
+          }
+
+          // Store token
+          final tokenService = TokenService();
+          await tokenService.deleteToken(); // Clear any existing token
+          await tokenService.storeToken(authToken);
+
+          // Verify token was stored
+          final hasToken = await tokenService.hasToken();
+          print("Token stored successfully: $hasToken");
+
+          if (!hasToken) {
+            _showErrorSnackBar('Failed to store authentication token');
+            return;
+          }
+
+          // Navigate to profile setup
+          Navigator.pushReplacement(
             context,
-            '/reset-password',
-            arguments: {
-              'mobileNumber': widget.mobileNumber,
-              'otp': _otpController.text
-            }
-        );
+            MaterialPageRoute(
+              builder: (context) => ProfileSetup(
+                userId: userId,
+              ),
+            ),
+          );
+        }
       } else {
-        // For profile setup, navigate to home screen
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const ProfileSetup(userId: '1',)),
-              (route) => false,
-        );
+        _showErrorSnackBar(response.message);
       }
     } catch (e) {
+      print("OTP verification error: $e");
       _showErrorSnackBar('Something went wrong: ${e.toString()}');
     } finally {
       setState(() {
