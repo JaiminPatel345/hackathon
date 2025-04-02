@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import {AppError} from "../types/custom.types.js";
 
 
-const SECRET = process.env.JWT_ACCESS_SECRET || 'safdf786fsdhasdASDFAS'
+const SECRET = process.env.JWT_ACCESS_SECRET || 'ThisIsRandomOkAndNotActual?Safdf786fsdhasdASDFAS'
 
 //TODO: Do with 2 tokens
 
@@ -35,9 +35,6 @@ export const getTokens = async (username: string): Promise<string> => {
 
 const checkTokens = (token: string): Promise<string>  => {
 
-  // Check if the authorization header is present
-
-
   // Extract the token from the header
   if (!token) {
     throw new AppError("Invalid token format", 401);
@@ -48,9 +45,10 @@ const checkTokens = (token: string): Promise<string>  => {
   return new Promise((resolve, reject) => {
     jwt.verify(token, SECRET, (err: jwt.VerifyErrors | null, decoded: any) => {
       if (err) {
+        console.log("Error to check tokens")
         reject(new AppError("Invalid or expired token", 401));
       } else {
-        resolve(decoded.userId || decoded.uuid as string);
+        resolve(decoded.username);
       }
     });
   });

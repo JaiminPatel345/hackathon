@@ -1,8 +1,3 @@
-// types/custom.types.ts
-import {NextFunction, Request, Response} from 'express';
-
-
-// utils/AppError.ts
 export class AppError extends Error {
   statusCode: number;
   status: string;
@@ -24,9 +19,9 @@ export interface ApiResponse<T = any> {
 }
 
 export const formatResponse = <T>(
-  success: boolean,
-  message: string,
-  data?: T
+    success: boolean,
+    message: string,
+    data?: T
 ): ApiResponse<T> => ({
   success,
   message,

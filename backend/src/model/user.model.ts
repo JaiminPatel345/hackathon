@@ -7,15 +7,20 @@ const UserSchema = new Schema<IUser>({
   name: {
     type: String,
     required: true,
+    trim: true
   },
   username: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
+    lowercase: true
   },
   email: {
     type: String,
     required: false,
+    trim: true,
+    lowercase: true
   },
   hashPassword: {
     type: String,
@@ -26,10 +31,11 @@ const UserSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
+    trim: true
   },
   goal: {
-    title: {type: String},
-    target: {type: String},
+    title: {type: String, trim: true},
+    target: {type: String, trim: true},
     year: {type: Number},
     level: {
       type: String,
@@ -37,7 +43,8 @@ const UserSchema = new Schema<IUser>({
     },
   },
   interests: [{
-    type: String
+    type: String,
+    trim: true
   }],
   buddy: {
     type: Schema.Types.ObjectId,
@@ -63,11 +70,15 @@ const UserSchema = new Schema<IUser>({
     type: Boolean,
     default: false,
   },
-
-
+  isActive: {
+    type: Boolean,
+    default: true
+  }
 }, {
   timestamps: true,
 })
+
+UserSchema.index({isActive: 1});
 
 const User: mongoose.Model<IUser> = mongoose.model('User', UserSchema);
 export default User;
