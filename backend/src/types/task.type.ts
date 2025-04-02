@@ -16,7 +16,8 @@ export interface ITask extends Document {
   isDeleted: boolean;
   isPrivate: boolean;
   participants: mongoose.Types.ObjectId[];
-  progress:string;
+  progressOfMe:string;
+  progressOfBuddy:string;
   createdAt: Date;
   updatedAt: Date;
 }

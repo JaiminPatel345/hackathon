@@ -92,7 +92,6 @@ export const updateTask = async (req: Request, res: Response) => {
       content,
       category,
       finishDate,
-      isPrivate,
       progress
     }: IUpdateTaskRequest = req.body;
 
@@ -111,8 +110,18 @@ export const updateTask = async (req: Request, res: Response) => {
     if (content !== undefined) task.content = content;
     if (category !== undefined) task.category = category;
     if (finishDate !== undefined) task.finishDate = finishDate;
-    if (isPrivate !== undefined) task.isPrivate = isPrivate;
-    if (progress !== undefined) task.progress = progress;
+
+    console.log("1 :",task.participants);
+    console.log("2 :",task.participants[0]);
+    console.log("3 :",userId);
+
+    if (progress !== undefined) {
+      if (task.participants[0].toString() === userId.toString()) {
+        task.progressOfMe = progress;
+      } else {
+        task.progressOfBuddy = progress;
+      }
+    }
 
     await task.save();
 

@@ -13,7 +13,7 @@ router.post('/', isAuthenticated, verifyTaskRequest, taskController.createTask);
 // Get user tasks
 router.get('/', isAuthenticated, taskController.getUserTasks);
 
-// Update task
+// Update task , progress
 router.put('/', isAuthenticated, taskController.updateTask);
 
 // Toggle task status (mark as done)
