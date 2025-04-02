@@ -22,7 +22,7 @@ class ProfileNotifier extends StateNotifier<AsyncValue<Profile?>> {
       state = const AsyncValue.loading();
 
       // Call service to upload image and update profile
-      final success = await _profileService.updateProfile(profile, profileImage, userId);
+      final success = await _profileService.updateProfile(profile, userId);
 
       if (success) {
         // Update state with the new profile

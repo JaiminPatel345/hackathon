@@ -204,6 +204,7 @@ class _SignupScreenState extends State<SignupScreen>
             context,
             MaterialPageRoute(
               builder: (context) => OtpVerificationScreen(
+                username: user.username,
                 mobileNumber: mobileNumber,
                 verificationType: OtpVerificationType.profileSetup,
               ),

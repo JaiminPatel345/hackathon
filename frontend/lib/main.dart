@@ -4,8 +4,10 @@ import 'package:frontend/providers/api_provider.dart';
 import 'package:frontend/screens/Auth/login_screen.dart';
 import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/profile_setup.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() {
+  final storage = FlutterSecureStorage();
   runApp(ProviderScope(child: MyApp()));
 }
 
