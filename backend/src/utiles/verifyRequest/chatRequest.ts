@@ -11,7 +11,11 @@ export const verifyChatRequest = (req: Request, res: Response, next: NextFunctio
       throw new AppError("Invalid conversation type", 400);
     }
 
-    if (!participants || !Array.isArray(participants)) {
+    if(type === IConversationType.PERSONAL && !participants){
+      throw new AppError("Can't be alone in personal conversation ", 400);
+    }
+
+    if (participants && !Array.isArray(participants)) {
       throw new AppError("Participants must be an array", 400);
     }
 

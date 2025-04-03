@@ -1,14 +1,15 @@
 import mongoose, {Document, Schema} from "mongoose";
 
-export const IConversationType = {
-  PERSONAL: 'personal',
-  COMMUNITY: 'community'
-};
+// Define as an enum instead of an object
+export enum IConversationType {
+  PERSONAL = 'personal',
+  COMMUNITY = 'community'
+}
 
 export interface IConversation extends Document {
   title?: string;
   description?: string;
-  type?: typeof IConversationType;
+  type?: IConversationType;
   participants?: mongoose.Types.ObjectId[];
   lastMessage: mongoose.Types.ObjectId;
   readBy: mongoose.Types.ObjectId[];

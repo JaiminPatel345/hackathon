@@ -2,6 +2,7 @@ import Conversation from "../model/conversation.model.js";
 import {AppError} from "../types/custom.types.js";
 import mongoose from "mongoose";
 import Message from "../model/message.model.js";
+import {log} from "node:util";
 
 export const getConversationByIdFromDB = async (conversationId: string, errorMessage = "Conversation not found") => {
   const conversation = await Conversation.findById(conversationId);
@@ -13,8 +14,9 @@ export const getConversationByIdFromDB = async (conversationId: string, errorMes
 
 export const validateConversationParticipant = (conversation: any, userId: mongoose.Types.ObjectId) => {
   const isParticipant = conversation.participants.some(
-      (participantId: mongoose.Types.ObjectId) => participantId.toString() === userId.toString()
+      (participant: any) => participant._id.toString() === userId.toString() //it has _id , username , avatar
   );
+
 
   if (!isParticipant) {
     throw new AppError("User is not a participant in this conversation", 403);
