@@ -14,9 +14,13 @@ export interface IMessage extends Document {
   content?: string;
   resources?: mongoose.Types.ObjectId[];
   replyTo?: mongoose.Types.ObjectId;
-  deletedFor?: mongoose.Types.ObjectId[];
+  deletedFor: mongoose.Types.ObjectId[];
   isDeleted: boolean;
   isEdited: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  softDelete(): Promise<IMessage>;
+  editMessage(newContent: string): Promise<IMessage>;
 }
 
 export enum IResourceType {
