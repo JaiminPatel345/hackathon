@@ -22,11 +22,11 @@ const ConversationSchema = new Schema<IConversation>({
     required: true
   }],
   lastMessage: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Message'
   },
   readBy: [{
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
 }, {

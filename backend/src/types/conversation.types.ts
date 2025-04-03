@@ -10,6 +10,6 @@ export interface IConversation extends Document {
   description?: string;
   type?: typeof IConversationType;
   participants?: mongoose.Types.ObjectId[];
-  lastMessage: Schema.Types.ObjectId;
+  lastMessage: mongoose.Types.ObjectId;
   readBy: mongoose.Types.ObjectId[];
 }

@@ -1,5 +1,7 @@
 //---------- User -----------
 import {TaskCategory} from "./task.type.js";
+import {IConversationType} from "./conversation.types.js";
+import {IMessageType} from "./message.types.js";
 
 export interface ILoginRequest {
   identifier: string,
@@ -43,3 +45,36 @@ export interface IToggleTaskStatusRequest {
 
 
 //-------------User--------------
+
+
+
+
+//-----------Chat---------------
+export interface ICreateConversationRequest {
+  title?: string;
+  description?: string;
+  type: typeof IConversationType[keyof typeof IConversationType];
+  participants: string[];
+}
+
+export interface IUpdateConversationRequest {
+  conversationId: string;
+  title?: string;
+  description?: string;
+}
+
+export interface ISendMessageRequest {
+  conversationId: string;
+  content: string;
+  type?: typeof IMessageType[keyof typeof IMessageType];
+  replyTo?: string;
+}
+
+export interface IEditMessageRequest {
+  messageId: string;
+  content: string;
+}
+
+export interface IMarkAsReadRequest {
+  conversationId: string;
+}

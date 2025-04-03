@@ -3,7 +3,10 @@ import {Response} from 'express';
 import mongoose from 'mongoose';
 import {AppError, formatResponse} from "../types/custom.types.js";
 
-const handleError = (error: any, res: Response) => {
+const handleError = (error: any, res: Response, message?: string) => {
+  if (message) {
+    console.log(message);
+  }
   console.error(error);
 
   // Handle AppError instances

@@ -29,16 +29,12 @@ export const sendBuddyRequest = async (req: Request, res: Response) => {
     // Check if target user is not blocked
     validateUserNotBlocked(currentUser, userId);
 
-    if(receiverUser.buddy){
-      throw new AppError("Receiver already have buddy",400);
+    if (type === 'buddy' && receiverUser.buddy) {
+      throw new AppError("Receiver already have buddy", 400);
     }
 
-    if (receiverUser.blockedUsers.some(
-        (blockedId: mongoose.Types.ObjectId) => blockedId.toString() === currentUser._id.toString()
-    )) {
-      res.status(400).json(formatResponse(false, "Cannot send request to this user"));
-      return;
-    }
+    validateUserNotBlocked(receiverUser , currentUser._id);
+
 
     // If this is a primary buddy request, check if sender already has a buddy
     if (type === 'buddy' && currentUser.buddy) {
@@ -61,21 +57,21 @@ export const sendBuddyRequest = async (req: Request, res: Response) => {
 
     // Find and update any existing request regardless of status, or create a new one
     const buddyRequest = await BuddyRequest.findOneAndUpdate(
-      {
-        sender: currentUser._id,
-        receiver: userId,
-        type
-      },
-      {
-        $set: {
-          status: 'pending',
-          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+        {
+          sender: currentUser._id,
+          receiver: userId,
+          type
+        },
+        {
+          $set: {
+            status: 'pending',
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
+          }
+        },
+        {
+          upsert: true,
+          new: true
         }
-      },
-      {
-        upsert: true,
-        new: true
-      }
     );
 
     res.status(201).json(formatResponse(true, "Request sent successfully", {request: buddyRequest}));
