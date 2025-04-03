@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/profile_setup.dart';
 import 'package:frontend/services/token_service.dart';
 import 'package:google_fonts/google_fonts.dart';

@@ -1,12 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:frontend/services/token_service.dart';
-import 'package:http/http.dart' as http;
 import '../models/profile_model.dart';
-import '../providers/profile_provider.dart';
-import 'auth_service.dart';
 
 class ProfileService {
   // Singleton pattern
@@ -116,7 +112,7 @@ class ProfileService {
       }
     } catch (e) {
       print('Error in updateProfile: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -206,7 +202,7 @@ class ProfileService {
       } else {
         throw Exception('Failed to get profile: ${response.statusCode}');
       }
-    } on DioException catch (e) {
+    } on DioException {
       rethrow;
     } catch (e) {
       print('Unexpected error in getProfile: $e');
