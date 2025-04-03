@@ -10,6 +10,7 @@ import {CustomErrorHandler} from './types/server.types.js';
 import {formatResponse} from "./types/custom.types.js";
 import userRouter from "./routes/user.route.js";
 import taskRoute from "./routes/task.route.js";
+import chatRoute from "./routes/chat.route.js";
 
 
 // Create Express app
@@ -44,7 +45,8 @@ const startServer = async () => {
 
 
     // Routes
-    app.use('/task',taskRoute)
+    app.use('/chat', chatRoute)
+    app.use('/task', taskRoute)
     app.use('/user', userRouter)
     app.use('/auth', authRouter);
 

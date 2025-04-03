@@ -34,7 +34,7 @@ export const createConversation = async (req: Request, res: Response) => {
     const user = await getUserFromRequest(req);
     const userId = user._id;
 
-    const allParticipants = [...new Set([userId.toString(), ...participants])];
+    const allParticipants = participants ? [...new Set([userId.toString(), ...participants])] : [userId.toString()];
     const participantObjectIds = allParticipants.map(id => new mongoose.Types.ObjectId(id));
 
 
@@ -94,6 +94,7 @@ export const getConversationById = async (req: Request, res: Response) => {
     const {conversationId} = req.params;
     const user = await getUserFromRequest(req);
     const userId = user._id;
+    console.log("User name : ", user.username);
 
     const conversation = await Conversation.findById(conversationId)
         .populate('participants', 'username avatar')
@@ -143,6 +144,34 @@ export const updateConversation = async (req: Request, res: Response) => {
   }
 };
 
+//join any community
+//TODO: check if not personal then add
+export const joinCommunity = async (req: Request, res: Response) => {
+  try {
+    const user = await getUserFromRequest(req);
+    const userId = user._id;
+    const {conversationId} = req.params;
+
+    const conversation = await getConversationByIdFromDB(conversationId);
+
+    if (conversation.type === IConversationType.PERSONAL) {
+      throw new AppError("Can't add in personal chat ", 404);
+    }
+
+    const newConversation = await Conversation.findByIdAndUpdate(conversationId, {
+      $addToSet: {participants: userId},
+    }, {new: true});
+
+
+    res.status(201).json(formatResponse(true, "Community joined successfully", {newConversation}));
+
+
+  } catch (error) {
+    handleError(error, res, "Error joining community");
+  }
+}
+
+
 // Delete a conversation (soft delete not implemented as it wasn't in your model)
 export const deleteConversation = async (req: Request, res: Response) => {
   try {
@@ -159,7 +188,7 @@ export const deleteConversation = async (req: Request, res: Response) => {
     await Message.deleteMany({conversation: conversationId});
     await Conversation.findByIdAndDelete(conversationId);
 
-    res.json(formatResponse(true, "Conversation deleted successfully", null));
+    res.json(formatResponse(true, "Conversation deleted successfully"));
 
   } catch (error) {
     handleError(error, res, "Error deleting conversation");

@@ -13,7 +13,7 @@ export const generateAccessToken = async (username: string): Promise<string> => 
         jti: crypto.randomUUID()
       },
       SECRET,
-      {expiresIn: '2000Minutes'} //TODO
+      {expiresIn: '1Y'} //TODO
   );
 };
 
