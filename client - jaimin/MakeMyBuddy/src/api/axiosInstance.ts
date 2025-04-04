@@ -1,29 +1,29 @@
 import axios from 'axios';
-import { getToken } from '@/services/authService';
+import {getToken} from '@/services/authService';
 
-const BASE_URL = 'http://192.168.143.167:4000';
+const BASE_URL = 'http://192.168.142.168:4000';
 
 export const axiosInstance = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+    baseURL: BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
 // Add request interceptor to automatically add auth token
 axiosInstance.interceptors.request.use(
-  async (config) => {
-    // Try to get token from secure storage
-    const token = await getToken();
-    
-    // If token exists, add to headers
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    async (config) => {
+        // Try to get token from secure storage
+        const token = await getToken();
+
+        // If token exists, add to headers
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
-    
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
 );
