@@ -36,3 +36,19 @@ export const getAllTasks = async (token: string): Promise<ITask[]> => {
   });
   return response.data.data.tasks || [];
 };
+
+export const updateTaskDetails = async (
+    token: string,
+    taskId: string,
+    content?: string,
+    progress?: string,
+    category?: string,
+    isPrivate?: boolean
+): Promise<ITask> => {
+  const response = await axiosInstance.put(
+      `/task/${taskId}`,
+      {content, category, progress, isPrivate},
+      {headers: {Authorization: `Bearer ${token}`}}
+  );
+  return response.data.data;
+}

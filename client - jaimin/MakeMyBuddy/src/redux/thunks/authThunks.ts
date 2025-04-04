@@ -1,59 +1,66 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {login, register, verifyOtp} from '@/api/auth.api';
-import {setCredentials} from '../slices/authSlice';
+import {
+  ILoginRequest,
+  IRegisterRequest,
+  IVerifyOtpRequest
+} from "@/types/request";
 
-export const loginThunk = createAsyncThunk(
+// Create a base thunk that handles authentication errors
+const createAuthThunk = (type: any, apiCall: any) =>
+    createAsyncThunk(
+        `auth/${type}`,
+        async (payload, {rejectWithValue}) => {
+          try {
+            const response = await apiCall(payload);
+            return response.data;
+          } catch (error: any) {
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.response?.data ||
+                `${type.charAt(0).toUpperCase() + type.slice(1)} failed`
+            );
+          }
+        }
+    );
+
+// Login thunk
+export const loginUser = createAsyncThunk(
     'auth/login',
-    async (
-        {identifier, password}: { identifier: string; password: string },
-        {dispatch, rejectWithValue}
-    ) => {
+    async ({identifier, password}: ILoginRequest, {
+      dispatch,
+      rejectWithValue
+    }) => {
       try {
-        const data = await login(identifier, password);
-        dispatch(setCredentials({
-          token: data.data.token,
-          user: data.data.user
-        }));
-        return data.data;
+        const response = await login(identifier, password);
+        return response.data;
       } catch (error: any) {
         return rejectWithValue(error.response?.data || 'Login failed');
       }
     }
 );
 
-export const registerThunk = createAsyncThunk(
+// Register thunk
+export const registerUser = createAsyncThunk(
     'auth/register',
-    async (
-        {name, username, password, mobile}: {
-          name: string;
-          username: string;
-          password: string;
-          mobile: string
-        },
-        {rejectWithValue}
-    ) => {
+    async (userData:IRegisterRequest, {rejectWithValue}) => {
       try {
-        const data = await register(name, username, password, mobile);
-        return data.data.user;
+        const {name, username, password, mobile} = userData;
+        const response = await register(name, username, password, mobile);
+        return response.data;
       } catch (error: any) {
         return rejectWithValue(error.response?.data || 'Registration failed');
       }
     }
 );
 
-export const verifyOtpThunk = createAsyncThunk(
+// Verify OTP thunk
+export const verifyUserOtp = createAsyncThunk(
     'auth/verifyOtp',
-    async (
-        {username, givenOtp}: { username: string; givenOtp: string },
-        {dispatch, rejectWithValue}
-    ) => {
+    async ({username, givenOtp}:IVerifyOtpRequest, {dispatch, rejectWithValue}) => {
       try {
-        const data = await verifyOtp(username, givenOtp);
-        dispatch(setCredentials({
-          token: data.data.token,
-          user: data.data.user
-        }));
-        return data.data;
+        const response = await verifyOtp(username, givenOtp);
+        return response.data;
       } catch (error: any) {
         return rejectWithValue(error.response?.data || 'OTP verification failed');
       }

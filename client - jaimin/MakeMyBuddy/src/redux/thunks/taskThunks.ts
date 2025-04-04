@@ -3,88 +3,77 @@ import {
   createTask,
   deleteTask,
   getAllTasks,
-  toggleTaskStatus
+  toggleTaskStatus,
+  updateTaskDetails
 } from '@/api/task.api';
-import {
-  addTask,
-  removeTask,
-  setError,
-  setLoading,
-  setTasks,
-  updateTask
-} from '../slices/taskSlice';
+import {store} from '../store';
+import {IUpdateTaskRequest} from "@/types/request";
 
-export const fetchTasksThunk = createAsyncThunk(
+// Helper function to get token from state
+const getTokenFromState = () => {
+  const state = store.getState();
+  const token = state.auth.token;
+  if (!token) throw new Error('Authentication required');
+  return token;
+};
+
+// Fetch all tasks
+export const fetchTasks = createAsyncThunk(
     'task/fetchTasks',
-    async (_, {getState, dispatch}) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      dispatch(setLoading());
-      try {
-        const tasks = await getAllTasks(token);
-        dispatch(setTasks(tasks));
-        return tasks;
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
+    async (_) => {
+      const token = getTokenFromState();
+      return await getAllTasks(token);
     }
 );
 
-export const createTaskThunk = createAsyncThunk(
+// Create a new task
+export const addNewTask = createAsyncThunk(
     'task/createTask',
     async (
         {content, category, isPrivate}: {
           content: string;
           category: string;
-          isPrivate: boolean
-        },
-        {getState, dispatch}
+          isPrivate: boolean;
+        }
     ) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      try {
-        const task = await createTask(token, content, category, isPrivate);
-        dispatch(addTask(task));
-        return task;
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
+      const token = getTokenFromState();
+      return await createTask(token, content, category, isPrivate);
     }
 );
 
-export const toggleTaskStatusThunk = createAsyncThunk(
-    'task/toggleTaskStatus',
-    async (taskId: string, {getState, dispatch}) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      try {
-        const updatedTask = await toggleTaskStatus(token, taskId);
-        dispatch(updateTask(updatedTask));
-        return updatedTask;
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
+// Toggle task completion status
+export const toggleTaskCompletion = createAsyncThunk(
+    'task/toggleStatus',
+    async (taskId: string) => {
+      const token = getTokenFromState();
+      return await toggleTaskStatus(token, taskId);
     }
 );
 
-export const deleteTaskThunk = createAsyncThunk(
+// Delete a task
+export const removeTask = createAsyncThunk(
     'task/deleteTask',
-    async (taskId: string, {getState, dispatch}) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      try {
-        await deleteTask(token, taskId);
-        dispatch(removeTask(taskId));
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
+    async (taskId: string) => {
+      const token = getTokenFromState();
+      await deleteTask(token, taskId);
+      return taskId;
+    }
+);
+
+// Update task details (assuming this API function exists)
+export const updateTask = createAsyncThunk(
+    'task/updateTask',
+    async (
+        {
+          taskId,
+          content,
+          category,
+          progress,
+          finishDate,
+          isPrivate
+        }: IUpdateTaskRequest
+    ) => {
+      const token = getTokenFromState();
+      return await updateTaskDetails(token, taskId, content, progress, category, isPrivate);
     }
 );

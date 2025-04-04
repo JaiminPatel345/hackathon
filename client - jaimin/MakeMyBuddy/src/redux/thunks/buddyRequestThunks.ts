@@ -6,115 +6,69 @@ import {
   getSentRequests,
   rejectBuddyRequest,
   sendBuddyRequest
-} from '../../api/buddyRequest.api';
-import {
-  addSentRequest,
-  setError,
-  setLoading,
-  setReceivedRequests,
-  setSentRequests
-} from '@/redux/slices/buddyRequestSlice';
+} from '@/api/buddyRequest.api';
+import {store} from '../store';
 
-export const fetchSentRequestsThunk = createAsyncThunk(
-    'buddyRequests/fetchSent',
-    async (_, {getState, dispatch}) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      dispatch(setLoading());
-      try {
-        const requests = await getSentRequests(token);
-        dispatch(setSentRequests(requests));
-        return requests;
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
+// Helper function to get token from state
+const getTokenFromState = () => {
+  const state = store.getState();
+  const token = state.auth.token;
+  if (!token) throw new Error('Authentication required');
+  return token;
+};
+
+// Fetch all buddy requests (sent and received)
+export const fetchBuddyRequests = createAsyncThunk(
+    'buddyRequests/fetchAll',
+    async (_, {getState}) => {
+      const token = getTokenFromState();
+      const [sent, received] = await Promise.all([
+        getSentRequests(token),
+        getReceivedRequests(token)
+      ]);
+
+      return {sent, received};
     }
 );
 
-export const fetchReceivedRequestsThunk = createAsyncThunk(
-    'buddyRequests/fetchReceived',
-    async (_, {getState, dispatch}) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      dispatch(setLoading());
-      try {
-        const requests = await getReceivedRequests(token);
-        dispatch(setReceivedRequests(requests));
-        return requests;
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
-    }
-);
-
-export const sendBuddyRequestThunk = createAsyncThunk(
+// Send a new buddy request
+export const sendRequest = createAsyncThunk(
     'buddyRequests/send',
-    async (
-        {userId, type}: { userId: string; type: 'buddy' | 'follower' },
-        {getState, dispatch}
-    ) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      try {
-        const request = await sendBuddyRequest(token, userId, type);
-        dispatch(addSentRequest(request));
-        return request;
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
+    async ({userId, type}: {
+      userId: string;
+      type: 'buddy' | 'follower'
+    }, {getState}) => {
+      const token = getTokenFromState();
+      return await sendBuddyRequest(token, userId, type);
     }
 );
 
-export const acceptBuddyRequestThunk = createAsyncThunk(
+// Accept a buddy request
+export const acceptRequest = createAsyncThunk(
     'buddyRequests/accept',
-    async (requestId: string, {getState, dispatch}) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      try {
-        await acceptBuddyRequest(token, requestId);
-        dispatch(fetchReceivedRequestsThunk()); // Refresh requests
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
+    async (requestId: string) => {
+      const token = getTokenFromState();
+      const result = await acceptBuddyRequest(token, requestId);
+      return {requestId, result};
     }
 );
 
-export const rejectBuddyRequestThunk = createAsyncThunk(
+// Reject a buddy request
+export const rejectRequest = createAsyncThunk(
     'buddyRequests/reject',
-    async (requestId: string, {getState, dispatch}) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      try {
-        await rejectBuddyRequest(token, requestId);
-        dispatch(fetchReceivedRequestsThunk()); // Refresh requests
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
+    async (requestId: string) => {
+      const token = getTokenFromState();
+      await rejectBuddyRequest(token, requestId);
+      return requestId;
     }
 );
 
-export const cancelBuddyRequestThunk = createAsyncThunk(
+// Cancel a sent buddy request
+export const cancelRequest = createAsyncThunk(
     'buddyRequests/cancel',
-    async (requestId: string, {getState, dispatch}) => {
-      const state = getState() as any;
-      const token = state.auth.token;
-      if (!token) throw new Error('No token found');
-      try {
-        await cancelBuddyRequest(token, requestId);
-        dispatch(fetchSentRequestsThunk()); // Refresh requests
-      } catch (error: any) {
-        dispatch(setError(error.message));
-        throw error;
-      }
+    async (requestId: string) => {
+      const token = getTokenFromState();
+      await cancelBuddyRequest(token, requestId);
+      return requestId;
     }
 );
