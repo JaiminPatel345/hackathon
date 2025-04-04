@@ -12,7 +12,7 @@ export default function ConversationItem({conversation}: ConversationItemProps) 
   return (
       <TouchableOpacity
           className="p-4 border-b border-gray-200"
-          onPress={() => router.push(`/chat/${conversation._id}`)}
+          onPress={() => router.push(`../chat/${conversation._id}`)}
       >
         <Text className="text-lg">
           {conversation.title || conversation.participants.map(p => p.username).join(', ')}

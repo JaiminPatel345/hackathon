@@ -2,26 +2,31 @@ import React, { useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/store';
-import { fetchTasks } from '@/redux/thunks/taskThunks';
-import { fetchBuddyRequests } from '@/redux/thunks/buddyRequestThunks';
+import { fetchTasksThunk } from '@/redux/thunks/taskThunks';
+import { fetchBuddyRequestsThunk } from '@/redux/thunks/buddyRequestThunks';
 import TaskItem from '@/components/TaskItem';
 import { router } from 'expo-router';
+import { IBuddyRequest } from '@/types/buddyRequest';
 
 export default function HomeScreen() {
   const dispatch = useDispatch<AppDispatch>();
   const { tasks, loading: tasksLoading } = useSelector((state: RootState) => state.tasks);
-  const { buddyRequests, loading: buddyRequestsLoading } = useSelector(
+  const { sentRequests, receivedRequests, loading: buddyRequestsLoading } = useSelector(
     (state: RootState) => state.buddyRequests
   );
   const { user } = useSelector((state: RootState) => state.auth);
 
+  // Combine both sent and received requests for display
+  const allBuddyRequests = [...sentRequests, ...receivedRequests];
+
   useEffect(() => {
-    dispatch(fetchTasks());
-    dispatch(fetchBuddyRequests());
+    dispatch(fetchTasksThunk());
+    dispatch(fetchBuddyRequestsThunk());
   }, [dispatch]);
 
-  const navigateToChat = (chatId: string) => {
-    router.push(`/chat/${chatId}`);
+  const navigateToChat = (buddyRequestId: string) => {
+    // Navigate to chat with the buddy request ID instead of chat ID
+    router.push(`../chat/${buddyRequestId}`);
   };
 
   if (tasksLoading || buddyRequestsLoading) {
@@ -42,7 +47,7 @@ export default function HomeScreen() {
           <FlatList
             data={tasks}
             renderItem={({ item }) => <TaskItem task={item} />}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item._id}
             horizontal
             showsHorizontalScrollIndicator={false}
             className="mb-4"
@@ -54,22 +59,22 @@ export default function HomeScreen() {
 
       <View>
         <Text className="text-xl font-semibold mb-3">Buddy Requests</Text>
-        {buddyRequests.length > 0 ? (
+        {allBuddyRequests.length > 0 ? (
           <FlatList
-            data={buddyRequests}
+            data={allBuddyRequests}
             renderItem={({ item }) => (
               <TouchableOpacity
                 className="bg-gray-100 p-4 rounded-lg mb-3"
-                onPress={() => navigateToChat(item.chatId)}
+                onPress={() => navigateToChat(item._id)}
               >
-                <Text className="font-medium">{item.requestType}</Text>
-                <Text className="text-gray-500 mt-1">{item.description}</Text>
+                <Text className="font-medium">{item.sender.name}</Text>
+                <Text className="text-gray-500 mt-1">Request Type: {item.type}</Text>
                 <Text className="text-blue-500 mt-2">
                   Status: {item.status}
                 </Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item._id}
           />
         ) : (
           <Text className="text-gray-500">No buddy requests available</Text>

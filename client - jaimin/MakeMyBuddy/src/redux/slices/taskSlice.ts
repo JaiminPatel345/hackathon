@@ -1,11 +1,11 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {ITask} from '@/types/task';
 import {
-  addNewTask,
-  fetchTasks,
-  removeTask,
-  toggleTaskCompletion,
-  updateTask
+  addNewTaskThunk,
+  fetchTasksThunk,
+  removeTaskThunk,
+  toggleTaskCompletionThunk,
+  updateTaskThunk
 } from '../thunks/taskThunks';
 
 interface TaskState {
@@ -31,37 +31,37 @@ const taskSlice = createSlice({
   extraReducers: (builder) => {
     // Fetch tasks
     builder
-        .addCase(fetchTasks.pending, (state) => {
+        .addCase(fetchTasksThunk.pending, (state) => {
           state.loading = true;
           state.error = null;
         })
-        .addCase(fetchTasks.fulfilled, (state, action) => {
+        .addCase(fetchTasksThunk.fulfilled, (state, action) => {
           state.tasks = action.payload;
           state.loading = false;
         })
-        .addCase(fetchTasks.rejected, (state, action) => {
+        .addCase(fetchTasksThunk.rejected, (state, action) => {
           state.loading = false;
           state.error = action.error.message || 'Failed to fetch tasks';
         })
 
     // Add task
     builder
-        .addCase(addNewTask.pending, (state) => {
+        .addCase(addNewTaskThunk.pending, (state) => {
           state.loading = true;
           state.error = null;
         })
-        .addCase(addNewTask.fulfilled, (state, action) => {
+        .addCase(addNewTaskThunk.fulfilled, (state, action) => {
           state.tasks.push(action.payload);
           state.loading = false;
         })
-        .addCase(addNewTask.rejected, (state, action) => {
+        .addCase(addNewTaskThunk.rejected, (state, action) => {
           state.loading = false;
           state.error = action.error.message || 'Failed to create task';
         })
 
     // Toggle task status
     builder
-        .addCase(toggleTaskCompletion.fulfilled, (state, action) => {
+        .addCase(toggleTaskCompletionThunk.fulfilled, (state, action) => {
           const index = state.tasks.findIndex(task => task._id === action.payload._id);
           if (index !== -1) {
             state.tasks[index] = action.payload;
@@ -70,18 +70,18 @@ const taskSlice = createSlice({
 
     // Delete task
     builder
-        .addCase(removeTask.fulfilled, (state, action) => {
+        .addCase(removeTaskThunk.fulfilled, (state, action) => {
           state.tasks = state.tasks.filter(task => task._id !== action.payload);
         })
 
     // Update task
     builder
-        .addCase(updateTask.fulfilled, (state, action) => {
+        .addCase(updateTaskThunk.fulfilled, (state, action) => {
           const index = state.tasks.findIndex(task => task._id === action.payload._id);
           if (index !== -1) {
             state.tasks[index] = action.payload;
           }
-        });
+        })
   },
 });
 

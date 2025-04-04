@@ -2,7 +2,7 @@ import {Text, View} from 'react-native';
 import {useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {useRouter} from 'expo-router';
-import {loginThunk} from '@/redux/thunks/authThunks';
+import {loginUserThunk} from '@/redux/thunks/authThunks';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import {ThunkDispatch} from "redux-thunk";
@@ -15,8 +15,8 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      await dispatch(loginThunk({identifier, password})).unwrap();
-      router.replace('/(tabs)');
+      await dispatch(loginUserThunk({identifier, password})).unwrap();
+      router.replace('../../(tabs)');
     } catch (error) {
       console.error('Login failed:', error);
     }
@@ -41,7 +41,7 @@ export default function Login() {
           Don't have an account?{' '}
           <Text
               className="text-blue-500"
-              onPress={() => router.push('/auth/register')}
+              onPress={() => router.push('./register')}
           >
             Register
           </Text>

@@ -25,7 +25,7 @@ const createAuthThunk = (type: any, apiCall: any) =>
     );
 
 // Login thunk
-export const loginUser = createAsyncThunk(
+export const loginUserThunk = createAsyncThunk(
     'auth/login',
     async ({identifier, password}: ILoginRequest, {
       dispatch,
@@ -41,7 +41,7 @@ export const loginUser = createAsyncThunk(
 );
 
 // Register thunk
-export const registerUser = createAsyncThunk(
+export const registerUserThunk = createAsyncThunk(
     'auth/register',
     async (userData:IRegisterRequest, {rejectWithValue}) => {
       try {
@@ -55,7 +55,7 @@ export const registerUser = createAsyncThunk(
 );
 
 // Verify OTP thunk
-export const verifyUserOtp = createAsyncThunk(
+export const verifyUserOtpThunk = createAsyncThunk(
     'auth/verifyOtp',
     async ({username, givenOtp}:IVerifyOtpRequest, {dispatch, rejectWithValue}) => {
       try {

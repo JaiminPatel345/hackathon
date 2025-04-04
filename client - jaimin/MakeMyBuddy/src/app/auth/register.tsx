@@ -2,7 +2,7 @@ import {Text, View} from 'react-native';
 import {useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {useRouter} from 'expo-router';
-import {registerThunk} from '@/redux/thunks/authThunks';
+import {registerUserThunk} from '@/redux/thunks/authThunks';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import {ThunkDispatch} from "redux-thunk";
@@ -17,16 +17,14 @@ export default function Register() {
 
   const handleRegister = async () => {
     try {
-      const user = await dispatch(registerThunk({
+      const user = await dispatch(registerUserThunk({
         name,
         username,
         password,
         mobile
       })).unwrap();
-      router.push({
-        pathname: '/auth/verify-otp',
-        params: {username: user.username}
-      });
+      
+      router.push(`./verify-otp?username=${username}`);
     } catch (error) {
       console.error('Registration failed:', error);
     }
@@ -49,7 +47,7 @@ export default function Register() {
         <Text className="text-center mt-2">
           Already have an account?{' '}
           <Text className="text-blue-500"
-                onPress={() => router.push('/auth/login')}>
+                onPress={() => router.push('./login')}>
             Login
           </Text>
         </Text>

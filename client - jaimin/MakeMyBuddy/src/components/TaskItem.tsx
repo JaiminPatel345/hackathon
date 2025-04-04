@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { ITask } from '../types/task';
 import { useDispatch } from 'react-redux';
-import { toggleTaskStatusThunk } from '@/redux/thunks/taskThunks';
+import { toggleTaskCompletionThunk } from '@/redux/thunks/taskThunks';
 import {ThunkDispatch} from "redux-thunk";
 
 
@@ -13,7 +13,7 @@ export default function TaskItem({ task }: TaskItemProps) {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
   const handleToggle = () => {
-    dispatch(toggleTaskStatusThunk(task._id));
+    dispatch(toggleTaskCompletionThunk(task._id));
   };
 
   return (

@@ -2,7 +2,7 @@ import {Text, View} from 'react-native';
 import {useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {useLocalSearchParams, useRouter} from 'expo-router';
-import {verifyOtpThunk} from '@/redux/thunks/authThunks';
+import {verifyUserOtpThunk} from '@/redux/thunks/authThunks';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import {ThunkDispatch} from "redux-thunk";
@@ -15,11 +15,11 @@ export default function VerifyOtp() {
 
   const handleVerify = async () => {
     try {
-      await dispatch(verifyOtpThunk({
+      await dispatch(verifyUserOtpThunk({
         username: username as string,
         givenOtp: otp
       })).unwrap();
-      router.replace('/(tabs)');
+      router.replace(`../../(tabs)?id=${username}`);
     } catch (error) {
       console.error('OTP verification failed:', error);
     }

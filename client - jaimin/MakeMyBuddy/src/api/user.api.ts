@@ -18,10 +18,8 @@ export const updateProfile = async (
   return response.data.data.user;
 };
 
-export const getUserProfile = async (token: string, userId: string): Promise<IUser> => {
-  const response = await axiosInstance.get(`/user/profile/${userId}`, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+export const getUserProfile = async (userId: string): Promise<IUser> => {
+  const response = await axiosInstance.get(`/user/profile/${userId}`);
   return response.data.data.user;
 };
 

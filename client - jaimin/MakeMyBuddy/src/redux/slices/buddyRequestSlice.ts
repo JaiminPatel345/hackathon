@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IBuddyRequest } from '@/types/buddyRequest';
 import {
-  fetchBuddyRequests,
-  sendRequest,
-  acceptRequest,
-  rejectRequest,
-  cancelRequest
+  fetchBuddyRequestsThunk,
+  sendRequestThunk,
+  acceptRequestThunk,
+  rejectRequestThunk,
+  cancelRequestThunk
 } from '../thunks/buddyRequestThunks';
 
 interface BuddyRequestState {
@@ -33,83 +33,83 @@ const buddyRequestSlice = createSlice({
   extraReducers: (builder) => {
     // Fetch all buddy requests
     builder
-      .addCase(fetchBuddyRequests.pending, (state) => {
+      .addCase(fetchBuddyRequestsThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchBuddyRequests.fulfilled, (state, action) => {
+      .addCase(fetchBuddyRequestsThunk.fulfilled, (state, action) => {
         state.sentRequests = action.payload.sent;
         state.receivedRequests = action.payload.received;
         state.loading = false;
       })
-      .addCase(fetchBuddyRequests.rejected, (state, action) => {
+      .addCase(fetchBuddyRequestsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch buddy requests';
       })
 
     // Send buddy request
     builder
-      .addCase(sendRequest.pending, (state) => {
+      .addCase(sendRequestThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(sendRequest.fulfilled, (state, action) => {
+      .addCase(sendRequestThunk.fulfilled, (state, action) => {
         state.sentRequests.push(action.payload);
         state.loading = false;
       })
-      .addCase(sendRequest.rejected, (state, action) => {
+      .addCase(sendRequestThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to send request';
       })
 
     // Accept buddy request
     builder
-      .addCase(acceptRequest.pending, (state) => {
+      .addCase(acceptRequestThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(acceptRequest.fulfilled, (state, action) => {
-        const index = state.receivedRequests.findIndex(req => req._id === action.payload.requestId);
+      .addCase(acceptRequestThunk.fulfilled, (state, action) => {
+        const index = state.receivedRequests.findIndex(req => req._id === action.payload._id);
         if (index !== -1) {
           state.receivedRequests[index].status = 'accepted';
         }
         state.loading = false;
       })
-      .addCase(acceptRequest.rejected, (state, action) => {
+      .addCase(acceptRequestThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to accept request';
       })
 
     // Reject buddy request
     builder
-      .addCase(rejectRequest.pending, (state) => {
+      .addCase(rejectRequestThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(rejectRequest.fulfilled, (state, action) => {
+      .addCase(rejectRequestThunk.fulfilled, (state, action) => {
         state.receivedRequests = state.receivedRequests.filter(
-          request => request._id !== action.payload
+          request => request._id !== action.payload._id
         );
         state.loading = false;
       })
-      .addCase(rejectRequest.rejected, (state, action) => {
+      .addCase(rejectRequestThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to reject request';
       })
 
     // Cancel buddy request
     builder
-      .addCase(cancelRequest.pending, (state) => {
+      .addCase(cancelRequestThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(cancelRequest.fulfilled, (state, action) => {
+      .addCase(cancelRequestThunk.fulfilled, (state, action) => {
         state.sentRequests = state.sentRequests.filter(
-          request => request._id !== action.payload
+          request => request._id !== action.payload._id
         );
         state.loading = false;
       })
-      .addCase(cancelRequest.rejected, (state, action) => {
+      .addCase(cancelRequestThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to cancel request';
       });

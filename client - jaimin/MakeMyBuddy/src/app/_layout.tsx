@@ -1,30 +1,63 @@
-import { useEffect } from 'react';
-import { useSelector, Provider } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, Provider, useDispatch } from 'react-redux';
 import { Redirect, Slot, Stack } from 'expo-router';
-import { RootState, store } from '@/redux/store';
+import { RootState, store, persistor } from '@/redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
+import { getToken, getUser } from '@/services/authService';
+import { initializeFromStorage } from '@/redux/slices/authSlice';
 import '../styles/global.css';
+import '../styles/fix.css';
 
-function RootLayoutNav() {
+// App wrapper component to handle auth check
+function AppContent() {
+  const [isLoading, setIsLoading] = useState(true);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const dispatch = useDispatch();
 
-  // If not authenticated, redirect to auth flow
-  if (!isAuthenticated) {
-    return <Redirect href="/auth/login" />;
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const token = await getToken();
+        const user = await getUser();
+        
+        if (token && user) {
+          dispatch(initializeFromStorage({ token, user }));
+        }
+      } catch (error) {
+        console.error('Failed to load auth data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, [dispatch]);
+
+  if (isLoading) {
+    return null; // Or show a loading spinner
   }
 
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      {!isAuthenticated ? (
+        <Stack.Screen name="auth" />
+      ) : (
+        <>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="user" />
+          <Stack.Screen name="chat" />
+        </>
+      )}
+    </Stack>
+  );
 }
 
 export default function RootLayout() {
   return (
     <Provider store={store}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="auth" options={{ headerShown: false }} />
-        <Stack.Screen name="user" options={{ headerShown: false }} />
-        <Stack.Screen name="chat" options={{ headerShown: false }} />
-      </Stack>
-      <RootLayoutNav />
+      <PersistGate loading={null} persistor={persistor}>
+        <AppContent />
+      </PersistGate>
     </Provider>
   );
 }

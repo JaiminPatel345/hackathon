@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, Text, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
@@ -12,7 +13,7 @@ export default function UserProfile() {
 
   useEffect(() => {
     if (token) {
-      getUserProfile(token, id as string).then(setUser);
+      getUserProfile(id as string).then(setUser);
     }
   }, [id, token]);
 

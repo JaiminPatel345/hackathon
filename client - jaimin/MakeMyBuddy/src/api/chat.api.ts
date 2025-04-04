@@ -2,23 +2,19 @@ import {axiosInstance} from '@/api/axiosInstance';
 import {IConversation} from '@/types/chat';
 
 export const createConversation = async (
-    token: string,
     type: 'personal' | 'community',
     participants?: string[],
     title?: string
 ): Promise<IConversation> => {
   const response = await axiosInstance.post(
       '/chat/conversation',
-      {type, participants, title},
-      {headers: {Authorization: `Bearer ${token}`}}
+      {type, participants, title}
   );
   return response.data.data;
 };
 
-export const getAllConversations = async (token: string): Promise<IConversation[]> => {
-  const response = await axiosInstance.get('/chat/conversation', {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+export const getAllConversations = async (): Promise<IConversation[]> => {
+  const response = await axiosInstance.get('/chat/conversation');
   return response.data.data;
 };
 
@@ -55,15 +51,13 @@ export const getConversationMessages = async (
 };
 
 export const sendMessage = async (
-    token: string,
     conversationId: string,
     content: string,
     replyTo?: string,
 ): Promise<any> => {
   const response = await axiosInstance.post(
-      `/chat/message}`,
-      {conversationId, content, replyTo},
-      {headers: {Authorization: `Bearer ${token}`}}
+      `/chat/message`,
+      {conversationId, content, replyTo}
   );
   return response.data.data;
 }

@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IConversation, IMessage } from '@/types/chat';
 import {
-  fetchConversations,
-  createNewConversation,
-  deleteExistingConversation,
-  joinExistingConversation,
-  fetchMessages,
-  sendNewMessage
+  fetchConversationsThunk,
+  createNewConversationThunk,
+  deleteExistingConversationThunk,
+  joinExistingConversationThunk,
+  fetchMessagesThunk,
+  sendNewMessageThunk
 } from '../thunks/chatThunks';
 
 interface ChatState {
@@ -49,43 +49,43 @@ const chatSlice = createSlice({
   extraReducers: (builder) => {
     // Fetch conversations
     builder
-      .addCase(fetchConversations.pending, (state) => {
+      .addCase(fetchConversationsThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchConversations.fulfilled, (state, action) => {
+      .addCase(fetchConversationsThunk.fulfilled, (state, action) => {
         state.conversations = action.payload;
         state.loading = false;
       })
-      .addCase(fetchConversations.rejected, (state, action) => {
+      .addCase(fetchConversationsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch conversations';
       })
 
     // Create conversation
     builder
-      .addCase(createNewConversation.pending, (state) => {
+      .addCase(createNewConversationThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(createNewConversation.fulfilled, (state, action) => {
+      .addCase(createNewConversationThunk.fulfilled, (state, action) => {
         state.conversations.push(action.payload);
         state.loading = false;
         // Set as active conversation
         state.activeConversationId = action.payload._id;
       })
-      .addCase(createNewConversation.rejected, (state, action) => {
+      .addCase(createNewConversationThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to create conversation';
       })
 
     // Delete conversation
     builder
-      .addCase(deleteExistingConversation.pending, (state) => {
+      .addCase(deleteExistingConversationThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(deleteExistingConversation.fulfilled, (state, action) => {
+      .addCase(deleteExistingConversationThunk.fulfilled, (state, action) => {
         state.conversations = state.conversations.filter(
           convo => convo._id !== action.payload
         );
@@ -99,43 +99,43 @@ const chatSlice = createSlice({
         }
         state.loading = false;
       })
-      .addCase(deleteExistingConversation.rejected, (state, action) => {
+      .addCase(deleteExistingConversationThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to delete conversation';
       })
 
     // Join conversation
     builder
-      .addCase(joinExistingConversation.fulfilled, (state, action) => {
+      .addCase(joinExistingConversationThunk.fulfilled, (state, action) => {
         const index = state.conversations.findIndex(
-          c => c._id === action.payload.conversationId
+          c => c._id === action.payload
         );
 
       })
 
     // Fetch messages
     builder
-      .addCase(fetchMessages.pending, (state) => {
+      .addCase(fetchMessagesThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchMessages.fulfilled, (state, action) => {
+      .addCase(fetchMessagesThunk.fulfilled, (state, action) => {
         const { conversationId, messages } = action.payload;
         state.messages[conversationId] = messages;
         state.loading = false;
       })
-      .addCase(fetchMessages.rejected, (state, action) => {
+      .addCase(fetchMessagesThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch messages';
       })
 
     // Send message
     builder
-      .addCase(sendNewMessage.pending, (state) => {
+      .addCase(sendNewMessageThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(sendNewMessage.fulfilled, (state, action) => {
+      .addCase(sendNewMessageThunk.fulfilled, (state, action) => {
         const { conversationId, message } = action.payload;
         if (!state.messages[conversationId]) {
           state.messages[conversationId] = [];
@@ -143,7 +143,7 @@ const chatSlice = createSlice({
         state.messages[conversationId].push(message);
         state.loading = false;
       })
-      .addCase(sendNewMessage.rejected, (state, action) => {
+      .addCase(sendNewMessageThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to send message';
       });

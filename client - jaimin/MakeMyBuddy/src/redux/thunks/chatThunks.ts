@@ -7,74 +7,62 @@ import {
   joinConversation,
   sendMessage
 } from '@/api/chat.api';
-import {store} from '../store';
 import {ICreateConversationRequest, ISendMessageRequest} from "@/types/request";
 
-// Helper function to get token from state
-const getTokenFromState = () => {
-  const state = store.getState();
-  const token = state.auth.token;
-  if (!token) throw new Error('Authentication required');
-  return token;
-};
-
 // Fetch all conversations
-export const fetchConversations = createAsyncThunk(
+export const fetchConversationsThunk = createAsyncThunk(
     'chat/fetchConversations',
-    async (_) => {
-      const token = getTokenFromState();
-      return await getAllConversations(token);
+    async () => {
+      return await getAllConversations();
     }
 );
 
 // Create a new conversation
-export const createNewConversation = createAsyncThunk(
+export const createNewConversationThunk = createAsyncThunk(
     'chat/createConversation',
-    async (
-        {type, participants, title}: ICreateConversationRequest
-    ) => {
-      const token = getTokenFromState();
-      return await createConversation(token, type, participants, title);
+    async ({type, participants, title}: ICreateConversationRequest) => {
+      return await createConversation(type, participants, title);
     }
 );
 
 // Delete a conversation
-export const deleteExistingConversation = createAsyncThunk(
+export const deleteExistingConversationThunk = createAsyncThunk(
     'chat/deleteConversation',
-    async (conversationId: string) => {
-      const token = getTokenFromState();
+    async (conversationId: string, { getState }) => {
+      const token = (getState() as any).auth.token;
       await deleteConversation(token, conversationId);
       return conversationId;
     }
 );
 
-// Join a conversation
-export const joinExistingConversation = createAsyncThunk(
+// Join an existing conversation
+export const joinExistingConversationThunk = createAsyncThunk(
     'chat/joinConversation',
-    async (conversationId: string) => {
-      const token = getTokenFromState();
-      const result = await joinConversation(token, conversationId);
-      return {conversationId, result};
+    async (conversationId: string, { getState }) => {
+      const token = (getState() as any).auth.token;
+      await joinConversation(token, conversationId);
+      return conversationId;
     }
 );
 
-// Add message fetching and sending
-export const fetchMessages = createAsyncThunk(
+// Fetch messages for a conversation
+export const fetchMessagesThunk = createAsyncThunk(
     'chat/fetchMessages',
-    async (conversationId: string) => {
-      const token = getTokenFromState();
+    async (conversationId: string, { getState }) => {
+      const token = (getState() as any).auth.token;
       const messages = await getConversationMessages(token, conversationId);
       return {conversationId, messages};
     }
 );
 
-export const sendNewMessage = createAsyncThunk(
+// Send a new message
+export const sendNewMessageThunk = createAsyncThunk(
     'chat/sendMessage',
-    async (
-        {conversationId, content, replyTo}: ISendMessageRequest
-    ) => {
-      const token = getTokenFromState();
-      const message = await sendMessage(token, conversationId, content, replyTo);
+    async ({conversationId, content, replyTo}: ISendMessageRequest) => {
+      // Handle optional replyTo parameter
+      const message = replyTo 
+        ? await sendMessage(conversationId, content, replyTo)
+        : await sendMessage(conversationId, content);
       return {conversationId, message};
     }
 );

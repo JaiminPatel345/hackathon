@@ -6,28 +6,10 @@ import {
   toggleTaskStatus,
   updateTaskDetails
 } from '@/api/task.api';
-import {store} from '../store';
 import {IUpdateTaskRequest} from "@/types/request";
 
-// Helper function to get token from state
-const getTokenFromState = () => {
-  const state = store.getState();
-  const token = state.auth.token;
-  if (!token) throw new Error('Authentication required');
-  return token;
-};
-
-// Fetch all tasks
-export const fetchTasks = createAsyncThunk(
-    'task/fetchTasks',
-    async (_) => {
-      const token = getTokenFromState();
-      return await getAllTasks(token);
-    }
-);
-
 // Create a new task
-export const addNewTask = createAsyncThunk(
+export const addNewTaskThunk = createAsyncThunk(
     'task/createTask',
     async (
         {content, category, isPrivate}: {
@@ -36,32 +18,36 @@ export const addNewTask = createAsyncThunk(
           isPrivate: boolean;
         }
     ) => {
-      const token = getTokenFromState();
-      return await createTask(token, content, category, isPrivate);
+      return await createTask(content, category, isPrivate);
+    }
+);
+
+// Fetch all tasks
+export const fetchTasksThunk = createAsyncThunk(
+    'task/getAllTasks',
+    async () => {
+      return await getAllTasks();
     }
 );
 
 // Toggle task completion status
-export const toggleTaskCompletion = createAsyncThunk(
+export const toggleTaskCompletionThunk = createAsyncThunk(
     'task/toggleStatus',
     async (taskId: string) => {
-      const token = getTokenFromState();
-      return await toggleTaskStatus(token, taskId);
+      return await toggleTaskStatus(taskId);
     }
 );
 
-// Delete a task
-export const removeTask = createAsyncThunk(
-    'task/deleteTask',
+// Remove a task
+export const removeTaskThunk = createAsyncThunk(
+    'task/removeTask',
     async (taskId: string) => {
-      const token = getTokenFromState();
-      await deleteTask(token, taskId);
-      return taskId;
+      return await deleteTask(taskId);
     }
 );
 
-// Update task details (assuming this API function exists)
-export const updateTask = createAsyncThunk(
+// Update task details
+export const updateTaskThunk = createAsyncThunk(
     'task/updateTask',
     async (
         {
@@ -73,7 +59,8 @@ export const updateTask = createAsyncThunk(
           isPrivate
         }: IUpdateTaskRequest
     ) => {
-      const token = getTokenFromState();
-      return await updateTaskDetails(token, taskId, content, progress, category, isPrivate);
+      // Ensure progress is a number
+      const progressNum = typeof progress === 'string' ? parseInt(progress, 10) : progress;
+      return await updateTaskDetails(taskId, content, progressNum, category, isPrivate);
     }
 );

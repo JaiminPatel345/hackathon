@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IUser } from '@/types/user';
-import { loginUser, registerUser, verifyUserOtp } from '../thunks/authThunks';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { loginUserThunk, registerUserThunk, verifyUserOtpThunk } from '../thunks/authThunks';
+import { saveAuthData, clearAuthData } from '@/services/authService';
 
 interface AuthState {
   token: string | null;
@@ -21,25 +21,6 @@ const initialState: AuthState = {
   registrationSuccess: false,
 };
 
-// Helper function to save auth data
-const saveAuthData = async (token: string, user: IUser) => {
-  try {
-    await AsyncStorage.setItem('token', token);
-    await AsyncStorage.setItem('user', JSON.stringify(user));
-  } catch (error) {
-    console.error('Failed to save auth data', error);
-  }
-};
-
-// Helper function to clear auth data
-const clearAuthData = async () => {
-  try {
-    await AsyncStorage.multiRemove(['token', 'user']);
-  } catch (error) {
-    console.error('Failed to clear auth data', error);
-  }
-};
-
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -54,7 +35,7 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = null;
 
-      // Save to AsyncStorage
+      // Save to SecureStore
       saveAuthData(action.payload.token, action.payload.user);
     },
     logout: (state) => {
@@ -63,7 +44,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.error = null;
 
-      // Clear from AsyncStorage
+      // Clear from SecureStore
       clearAuthData();
     },
     clearErrors: (state) => {
@@ -83,36 +64,33 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     // Login
     builder
-      .addCase(loginUser.pending, (state) => {
+      .addCase(loginUserThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(loginUserThunk.fulfilled, (state, action) => {
         state.token = action.payload.token;
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.loading = false;
-
-        // Save to AsyncStorage
-        saveAuthData(action.payload.token, action.payload.user);
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(loginUserThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })
 
     // Register
     builder
-      .addCase(registerUser.pending, (state) => {
+      .addCase(registerUserThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.registrationSuccess = false;
       })
-      .addCase(registerUser.fulfilled, (state) => {
+      .addCase(registerUserThunk.fulfilled, (state) => {
         state.loading = false;
         state.registrationSuccess = true;
       })
-      .addCase(registerUser.rejected, (state, action) => {
+      .addCase(registerUserThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
         state.registrationSuccess = false;
@@ -120,20 +98,17 @@ const authSlice = createSlice({
 
     // Verify OTP
     builder
-      .addCase(verifyUserOtp.pending, (state) => {
+      .addCase(verifyUserOtpThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(verifyUserOtp.fulfilled, (state, action) => {
+      .addCase(verifyUserOtpThunk.fulfilled, (state, action) => {
         state.token = action.payload.token;
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.loading = false;
-
-        // Save to AsyncStorage
-        saveAuthData(action.payload.token, action.payload.user);
       })
-      .addCase(verifyUserOtp.rejected, (state, action) => {
+      .addCase(verifyUserOtpThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });
@@ -141,5 +116,4 @@ const authSlice = createSlice({
 });
 
 export const { setCredentials, logout, clearErrors, initializeFromStorage } = authSlice.actions;
-export const authActions = authSlice.actions;
 export default authSlice.reducer;

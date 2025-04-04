@@ -1,0 +1,38 @@
+/* 
+ * CSS Fixes for react-native-css-interop issues
+ * 
+ * This file contains CSS fixes and safe alternatives for properties
+ * that cause errors in the React Native CSS interop library.
+ */
+
+/* 
+ * Instead of using aspect-ratio directly, use these helper classes
+ * which use width and height to achieve the same effect
+ */
+
+.aspect-square {
+  /* aspect-ratio: 1 / 1; - This causes parser error */
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%; /* Creates a 1:1 aspect ratio */
+}
+
+.aspect-video {
+  /* aspect-ratio: 16 / 9; - This causes parser error */
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* Creates a 16:9 aspect ratio */
+}
+
+.aspect-portrait {
+  /* aspect-ratio: 3 / 4; - This causes parser error */
+  width: 100%;
+  height: 0;
+  padding-bottom: 133.33%; /* Creates a 3:4 aspect ratio */
+}
+
+/* 
+ * IMPORTANT: If you need to use aspect-ratio in your app, 
+ * prefer using these utility classes instead of direct aspect-ratio properties
+ * or use the width/height percentage approach to avoid the parser error.
+ */ 
