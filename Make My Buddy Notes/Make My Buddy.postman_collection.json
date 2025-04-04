@@ -1,0 +1,2510 @@
+{
+	"info": {
+		"_postman_id": "c1989b35-1938-410b-9353-340ec0a52fe8",
+		"name": "Make My Buddy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33142602",
+		"_collection_link": "https://abhinavam.postman.co/workspace/Odoo-Hackathon~c21790bc-854d-41bb-8787-9ad792964dd2/collection/33142602-c1989b35-1938-410b-9353-340ec0a52fe8?action=share&source=collection_link&creator=33142602"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"identifier\": \"karnav123\", // mobile or username +918511633118\n    \"password\": \"Karnav@123\"\n    // Password requirements:\n    // - At least 8 characters long\n    // - Contains at least one uppercase letter\n    // - Contains at least one lowercase letter\n    // - Contains at least one number\n    // - Contains at least one special character (!@#$%^&*()_-+=<>?/[]{})\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"identifier\":\"karnav123\",\n    \"password\":\"Karnav@123\"\n // Password requirements:\n  // - At least 8 characters long\n  // - Contains at least one uppercase letter\n  // - Contains at least one lowercase letter\n  // - Contains at least one number\n  // - Contains at least one special character (!@#$%^&*()_-+=<>?/[]{})\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/auth/login",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "429"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1ad-qRXLmwawWANVwmCwXe/doWhGMGs\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 31 Mar 2025 08:50:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Login Successful\",\n    \"data\": {\n        \"user\": {\n            \"_id\": \"67ea53c9a058d4abee22e515\",\n            \"name\": \"Karnav Prajapati\",\n            \"username\": \"karnav123\",\n            \"mobile\": \"+919313343975\",\n            \"isMobileVerified\": true,\n            \"__v\": 0\n        },\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrYXJuYXYxMjMiLCJqdGkiOiI4OGZhN2E5NC00OGQyLTQ4MmMtYmE1MS1lZjg4YWIxY2Y0YWUiLCJpYXQiOjE3NDM0MTEwNDksImV4cCI6MTc0MzUzMTA0OX0.SNMFtqvimuB4KYWk22UeK7zNWgX3GqgDkfz5dV73bz4\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"test1\",\n    \"username\":\"test1\", \n    \"password\":\"Test@123\",\n    \"mobile\":\"+918888888889\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/auth/register",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Register",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\":\"Karnav Prajapati\",\n    \"username\":\"karnav123\", \n    \"password\":\"Karnav@123\",\n    \"mobile\":\"+919313343975\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/auth/register",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "560"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"230-d5XiIoI+YyuJRyMBrUU8ialJHrE\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 31 Mar 2025 16:36:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Created successfully\",\n    \"data\": {\n        \"user\": {\n            \"name\": \"Karnav Prajapati\",\n            \"username\": \"karnav123\",\n            \"hashPassword\": \"$2b$12$ayhe6khFPx6R/jw1emJDNegN/EO7hk5917Np388/MFKWeT5/10b/W\",\n            \"mobile\": \"+919313343975\",\n            \"interests\": [],\n            \"buddies\": [],\n            \"blockedUsers\": [],\n            \"pvsBuddy\": [],\n            \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\",\n            \"isMobileVerified\": false,\n            \"_id\": \"67eac4ab142f03b6409ef2d1\",\n            \"createdAt\": \"2025-03-31T16:36:59.152Z\",\n            \"updatedAt\": \"2025-03-31T16:36:59.152Z\",\n            \"__v\": 0\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Register Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"Karnav Prajapati\",\n    \"username\":\"karnav123\", \n    \"password\":\"Karnav@123\",\n    \"mobile\":\"+919313343975\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/auth/register",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Register",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\":\"Karnav Prajapati\",\n    \"username\":\"karnav123\", \n    \"password\":\"Karnav@123\",\n    \"mobile\":\"+919313343975\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/auth/register",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "560"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"230-bDnyRny7uc4fbfAiADhQfXTMM+0\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 31 Mar 2025 15:39:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Created successfully\",\n    \"data\": {\n        \"user\": {\n            \"name\": \"Karnav Prajapati\",\n            \"username\": \"karnav123\",\n            \"hashPassword\": \"$2b$12$ubx1fdtJJQzfP9ZgmHRdJenomjMWTacZeobjNGZ9uWZLXlM.6eO56\",\n            \"mobile\": \"+919313343975\",\n            \"interests\": [],\n            \"buddies\": [],\n            \"blockedUsers\": [],\n            \"pvsBuddy\": [],\n            \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\",\n            \"isMobileVerified\": false,\n            \"_id\": \"67eab74c92b5cd2453ce48a4\",\n            \"createdAt\": \"2025-03-31T15:39:56.955Z\",\n            \"updatedAt\": \"2025-03-31T15:39:56.955Z\",\n            \"__v\": 0\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Verify OTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\":\"test1\", \n    \"givenOtp\":\"1087\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/auth/verify-otp",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"auth",
+								"verify-otp"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Verify OTP",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\":\"jaimin123\", \n    \"givenOtp\":\"3846\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/auth/verify-otp",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"auth",
+										"verify-otp"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "426"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1aa-YTC7m6+fCn70BeCtMG3wqGxI0fw\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 31 Mar 2025 08:37:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"OTP verified\",\n    \"data\": {\n        \"user\": {\n            \"_id\": \"67ea53c9a058d4abee22e515\",\n            \"name\": \"Karnav Prajapati\",\n            \"username\": \"karnav123\",\n            \"mobile\": \"+919313343975\",\n            \"isMobileVerified\": false,\n            \"__v\": 0\n        },\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrYXJuYXYxMjMiLCJqdGkiOiJiNTFhOTg2OC1lYWMyLTQyMzMtOTcyNS03MDEyY2IwNTAxMTgiLCJpYXQiOjE3NDM0MTAyNDAsImV4cCI6MTc0MzUzMDI0MH0.cqCMGj4ObqvBm-WMm3vumhFPVXEwY9JRZ4Q1hcWGFYI\"\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Update user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imthcm5hdjEyMyIsImp0aSI6ImRhOTY1ZDE1LThjMGUtNGI2My1hMjk4LWQwZmUzZWQ3YzhiNyIsImlhdCI6MTc0MzUyNjQzMiwiZXhwIjoxNzQzNjQ2NDMyfQ.xu3uso3XfNcTXiTg4ysnn6o7aS2gI5rK80z5c29JCz0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"interests\": [\n        \"DSA\",\n        \"UI\",\n        \"FLUtTER\"\n    ]\n    // \"goal\":{\n    //     \"title\":\"Became best in DSA\",\n    //     \"target\":\"Solve 600 leetcode probleams\",\n    //     \"year\":2026,\n    //     \"level\":\"EXPERT\" // EXPERT , INTERMEDIATE OR BEGINNER \n    // }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/update-profile",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"update-profile"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Other details",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\":\"Karnav Prajapati\",\n    \"interests\":[\"JEE\",\"Physics\"],\n    \"avatar\":\"anyUrl\",\n    \"goal\":{\n        \"title\":\"JEE Advance\",\n        \"target\":\"Score rank under 1000\",\n        \"year\":2027,\n        \"level\":\"BEGINNER\"\n    }\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user/update-profile",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"update-profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "438"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1b6-TA/UsK9RZbZe0Z1vmdbJabUJ4R0\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 31 Mar 2025 16:33:51 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"User updated successfully\",\n    \"data\": {\n        \"user\": {\n            \"goal\": {\n                \"title\": \"JEE Advance\",\n                \"target\": \"Score rank under 1000\",\n                \"year\": 2027,\n                \"level\": \"BEGINNER\"\n            },\n            \"buddies\": [],\n            \"blockedUsers\": [],\n            \"pvsBuddy\": [],\n            \"_id\": \"67eab95c50343ed20c01e752\",\n            \"name\": \"Karnav Prajapati\",\n            \"username\": \"karnav123\",\n            \"mobile\": \"+919313343975\",\n            \"isMobileVerified\": true,\n            \"__v\": 0,\n            \"avatar\": \"anyUrl\",\n            \"interests\": [\n                \"JEE\",\n                \"Physics\"\n            ],\n            \"updatedAt\": \"2025-03-31T16:33:51.556Z\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get My Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6ImE0NGNmMGY1LTE4ZTUtNDJjZi04ZjdhLWZjN2NkZmRjNjM5OSIsImlhdCI6MTc0MzUyNjEwNSwiZXhwIjoxNzQzNjQ2MTA1fQ.8uEaeBCeJrj6aQiWqoR3W-lcR8M1-JQ5b5moD26JI_8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/me",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"me"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "get my profile",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user/me",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"me"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "639"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27f-q5ioWQzA/J5V1Avmvgy7NgeA5sc\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 01 Apr 2025 08:39:43 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"User profile retrieved successfully\",\n    \"data\": {\n        \"user\": {\n            \"goal\": {\n                \"title\": \"Became best in DSA\",\n                \"target\": \"Solve 500 leetcode probleams\",\n                \"year\": 2025,\n                \"level\": \"INTERMEDIATE\"\n            },\n            \"_id\": \"67eba0a06f8c7b9dece88e2a\",\n            \"name\": \"Jaimin Detrojai\",\n            \"username\": \"jaimin123\",\n            \"mobile\": \"+918511633118\",\n            \"interests\": [\n                \"DSA\",\n                \"BACKEND\"\n            ],\n            \"buddies\": [],\n            \"blockedUsers\": [],\n            \"pvsBuddy\": [],\n            \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\",\n            \"isMobileVerified\": true,\n            \"isActive\": true,\n            \"createdAt\": \"2025-04-01T08:15:28.536Z\",\n            \"updatedAt\": \"2025-04-01T08:34:46.411Z\",\n            \"__v\": 0\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "get other user  Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrYXJuYXYxMjMiLCJqdGkiOiI4OGZhN2E5NC00OGQyLTQ4MmMtYmE1MS1lZjg4YWIxY2Y0YWUiLCJpYXQiOjE3NDM0MTEwNDksImV4cCI6MTc0MzUzMTA0OX0.SNMFtqvimuB4KYWk22UeK7zNWgX3GqgDkfz5dV73bz4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/profile/67ee253df8af66ed55babc72",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"profile",
+								"67ee253df8af66ed55babc72"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "get other user  Profile",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user/profile/67eac4ab142f03b6409ef2d1",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"profile",
+										"67eac4ab142f03b6409ef2d1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "560"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"230-Xq1RbU+swNuj/oTekufG7oZ/dow\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 01 Apr 2025 08:38:23 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"User profile retrieved successfully\",\n    \"data\": {\n        \"user\": {\n            \"goal\": {\n                \"title\": \"JEE\",\n                \"target\": \"Score rank under 1000\",\n                \"year\": 2027,\n                \"level\": \"BEGINNER\"\n            },\n            \"isActive\": true,\n            \"_id\": \"67eac4ab142f03b6409ef2d1\",\n            \"name\": \"Karnav Prajapati\",\n            \"username\": \"karnav123\",\n            \"mobile\": \"+919313343975\",\n            \"interests\": [\n                \"JEE\",\n                \"Physics\"\n            ],\n            \"buddies\": [],\n            \"blockedUsers\": [],\n            \"pvsBuddy\": [],\n            \"avatar\": \"https://i.pinimg.com/736x/25/78/61/25786134576ce0344893b33a051160b1.jpg\",\n            \"isMobileVerified\": true,\n            \"createdAt\": \"2025-03-31T16:36:59.152Z\",\n            \"updatedAt\": \"2025-04-01T07:56:39.408Z\",\n            \"__v\": 0\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "toggle block",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6ImE0NGNmMGY1LTE4ZTUtNDJjZi04ZjdhLWZjN2NkZmRjNjM5OSIsImlhdCI6MTc0MzUyNjEwNSwiZXhwIjoxNzQzNjQ2MTA1fQ.8uEaeBCeJrj6aQiWqoR3W-lcR8M1-JQ5b5moD26JI_8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\":\"67eac4ab142f03b6409ef2d1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/toggle-block",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"toggle-block"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "toggle block",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\":\"67eac4ab142f03b6409ef2d1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user/toggle-block",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"toggle-block"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "56"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"38-Y9Ppo4dyhl5cKk0ITaX9afj52NY\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 01 Apr 2025 16:49:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"User unblocked successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "remove buddy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRlbW8xMjMiLCJqdGkiOiIyOWU1YWNiMy05MzNkLTRkYmUtODE4OS0zMDJhMDI0MjI4YTQiLCJpYXQiOjE3NDM1ODEzNzAsImV4cCI6MTc0MzcwMTM3MH0.WsOcNmcTU1QGIsa-KcpKxf-AutG2cpNJgZw-hAaATNc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    //Empty\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/remove-buddy",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"remove-buddy"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "remove buddy",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    //Empty\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user/remove-buddy",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"remove-buddy"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "55"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"37-1X6l3/7FjJ8j9ewVkT1YssAzMp4\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 03 Apr 2025 13:02:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Buddy removed successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "remove one buddies",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwianRpIjoiOTgwYjJmMTgtNjRlNS00MDc3LTkxZDktOWYzYTQ0YjA4Y2I5IiwiaWF0IjoxNzQzNTgxOTQ2LCJleHAiOjE3NDM3MDE5NDZ9.xdR2zhr9n6MjMeBYHkJfc7yn8C_VdXyQcu3gWbeIULo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\":\"67ec48bcce3365bb7fad9f33\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/remove-from-buddies",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"remove-from-buddies"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "remove one buddies",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\":\"67ec48bcce3365bb7fad9f33\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user/remove-from-buddies",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"remove-from-buddies"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "67"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"43-7Mzo9xtiuSBUs3nfq+wxuBDYJq8\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 03 Apr 2025 13:10:51 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"User removed from buddies successfully\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Task",
+			"item": [
+				{
+					"name": "create task",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6ImE0NGNmMGY1LTE4ZTUtNDJjZi04ZjdhLWZjN2NkZmRjNjM5OSIsImlhdCI6MTc0MzUyNjEwNSwiZXhwIjoxNzQzNjQ2MTA1fQ.8uEaeBCeJrj6aQiWqoR3W-lcR8M1-JQ5b5moD26JI_8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"content\": \"Finish DP in DSA\",\n    \"category\": \"Daily\", //  'Daily','Weekly','Monthly', 'Yearly'\n    \"isPrivate\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/task/",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"task",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "create task",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"content\": \"Finish DP in DSA\",\n    \"category\": \"Daily\", //  'Daily','Weekly','Monthly', 'Yearly'\n    \"isPrivate\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/task/",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"task",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "378"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"17a-w+CGveG0q2QL3CBrEvsKPnw7n5E\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 02 Apr 2025 06:30:45 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Task created successfully\",\n    \"data\": {\n        \"content\": \"Finish DP in DSA\",\n        \"isDoneByMe\": false,\n        \"isDoneByBuddy\": false,\n        \"category\": \"Daily\",\n        \"isDeleted\": false,\n        \"isPrivate\": false,\n        \"participants\": [\n            \"67ec48bcce3365bb7fad9f33\",\n            \"67eab74c92b5cd2453ce48a4\"\n        ],\n        \"_id\": \"67ecd995a296d9dbd08a9985\",\n        \"createdAt\": \"2025-04-02T06:30:45.780Z\",\n        \"updatedAt\": \"2025-04-02T06:30:45.780Z\",\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Toggle task status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrYXJuYXYxMjMiLCJqdGkiOiI4OGZhN2E5NC00OGQyLTQ4MmMtYmE1MS1lZjg4YWIxY2Y0YWUiLCJpYXQiOjE3NDM0MTEwNDksImV4cCI6MTc0MzUzMTA0OX0.SNMFtqvimuB4KYWk22UeK7zNWgX3GqgDkfz5dV73bz4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"taskId\": \"67eb858a4f7bf86e57990bfc\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/task/toggle-status",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"task",
+								"toggle-status"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Toggle task status",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"taskId\":\"67eb858a4f7bf86e57990bfc\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/task/toggle-status",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"task",
+										"toggle-status"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "343"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"157-wFI9hRF/xs8ou55mxN8iXXYw+2s\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 01 Apr 2025 06:22:40 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Task status updated\",\n    \"data\": {\n        \"_id\": \"67eb858a4f7bf86e57990bfc\",\n        \"content\": \"Finish DP in DSA\",\n        \"isDoneByMe\": true,\n        \"isDoneByBuddy\": false,\n        \"category\": \"Daily\",\n        \"isDeleted\": false,\n        \"isPrivate\": true,\n        \"participants\": [\n            \"67eac4ab142f03b6409ef2d1\"\n        ],\n        \"createdAt\": \"2025-04-01T06:19:54.166Z\",\n        \"updatedAt\": \"2025-04-01T06:22:40.803Z\",\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "update task",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6ImE0NGNmMGY1LTE4ZTUtNDJjZi04ZjdhLWZjN2NkZmRjNjM5OSIsImlhdCI6MTc0MzUyNjEwNSwiZXhwIjoxNzQzNjQ2MTA1fQ.8uEaeBCeJrj6aQiWqoR3W-lcR8M1-JQ5b5moD26JI_8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"taskId\": \"67ecd995a296d9dbd08a9985\",\n    \"progress\": \"65 %\"\n    //Other filed Can be : \n    //   \"category\",\n    //   \"finishDate\",\n    //   \"isPrivate\",\n    //   \"progress\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/task/",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"task",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Toggle task status",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"taskId\":\"67eb858a4f7bf86e57990bfc\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/task/toggle-status",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"task",
+										"toggle-status"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "343"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"157-wFI9hRF/xs8ou55mxN8iXXYw+2s\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 01 Apr 2025 06:22:40 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Task status updated\",\n    \"data\": {\n        \"_id\": \"67eb858a4f7bf86e57990bfc\",\n        \"content\": \"Finish DP in DSA\",\n        \"isDoneByMe\": true,\n        \"isDoneByBuddy\": false,\n        \"category\": \"Daily\",\n        \"isDeleted\": false,\n        \"isPrivate\": true,\n        \"participants\": [\n            \"67eac4ab142f03b6409ef2d1\"\n        ],\n        \"createdAt\": \"2025-04-01T06:19:54.166Z\",\n        \"updatedAt\": \"2025-04-01T06:22:40.803Z\",\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "delete task",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrYXJuYXYxMjMiLCJqdGkiOiI4OGZhN2E5NC00OGQyLTQ4MmMtYmE1MS1lZjg4YWIxY2Y0YWUiLCJpYXQiOjE3NDM0MTEwNDksImV4cCI6MTc0MzUzMTA0OX0.SNMFtqvimuB4KYWk22UeK7zNWgX3GqgDkfz5dV73bz4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/task/67eb858a4f7bf86e57990bfc",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"task",
+								"67eb858a4f7bf86e57990bfc"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "create task",
+							"originalRequest": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJrYXJuYXYxMjMiLCJqdGkiOiI4OGZhN2E5NC00OGQyLTQ4MmMtYmE1MS1lZjg4YWIxY2Y0YWUiLCJpYXQiOjE3NDM0MTEwNDksImV4cCI6MTc0MzUzMTA0OX0.SNMFtqvimuB4KYWk22UeK7zNWgX3GqgDkfz5dV73bz4",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/task/67eb858a4f7bf86e57990bfc",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"task",
+										"67eb858a4f7bf86e57990bfc"
+									]
+								}
+							},
+							"_postman_previewlanguage": "",
+							"header": [
+								{}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date"
+								}
+							],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "get all user tasks",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6ImE0NGNmMGY1LTE4ZTUtNDJjZi04ZjdhLWZjN2NkZmRjNjM5OSIsImlhdCI6MTc0MzUyNjEwNSwiZXhwIjoxNzQzNjQ2MTA1fQ.8uEaeBCeJrj6aQiWqoR3W-lcR8M1-JQ5b5moD26JI_8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/task/",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"task",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "create task",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"content\":\"Finish DP in DSA\",\n    \"category\":\"Daily\" , //  'Daily','Weekly','Monthly', 'Yearly'\n    \"isPrivate\":true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/task/",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"task",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "350"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"15e-Nag3XQn9Yz5OpkeKXiW+pSNf4JA\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 01 Apr 2025 06:19:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Task created successfully\",\n    \"data\": {\n        \"content\": \"Finish DP in DSA\",\n        \"isDoneByMe\": false,\n        \"isDoneByBuddy\": false,\n        \"category\": \"Daily\",\n        \"isDeleted\": false,\n        \"isPrivate\": true,\n        \"participants\": [\n            \"67eac4ab142f03b6409ef2d1\"\n        ],\n        \"_id\": \"67eb858a4f7bf86e57990bfc\",\n        \"createdAt\": \"2025-04-01T06:19:54.166Z\",\n        \"updatedAt\": \"2025-04-01T06:19:54.166Z\",\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Buddy Request",
+			"item": [
+				{
+					"name": "sent Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwianRpIjoiOTgwYjJmMTgtNjRlNS00MDc3LTkxZDktOWYzYTQ0YjA4Y2I5IiwiaWF0IjoxNzQzNTgxOTQ2LCJleHAiOjE3NDM3MDE5NDZ9.xdR2zhr9n6MjMeBYHkJfc7yn8C_VdXyQcu3gWbeIULo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\":\"67ec48bcce3365bb7fad9f33\",\n    \"type\":\"follower\" \n    //For making buddy => type = \"buddy\" \n    // For make follower ( budies   ) => type= \"follower\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/buddy-request/send",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"buddy-request",
+								"send"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "sent Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"userId\":\"67ec48bcce3365bb7fad9f33\",\n    \"type\":\"follower\" \n    //For making buddy => type = \"buddy\" \n    // For make follower ( budies   ) => type= \"follower\"\n}\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user/buddy-request/send",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"buddy-request",
+										"send"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "344"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"158-tsD3ClJVJSpKZS6dmXFDbuz3Dg4\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 03 Apr 2025 13:04:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Request sent successfully\",\n    \"data\": {\n        \"request\": {\n            \"_id\": \"67ee8770fdaab4f173720966\",\n            \"receiver\": \"67ec48bcce3365bb7fad9f33\",\n            \"sender\": \"67ecf2e55e68615999459acb\",\n            \"type\": \"follower\",\n            \"__v\": 0,\n            \"createdAt\": \"2025-04-03T13:04:48.651Z\",\n            \"expiresAt\": \"2025-05-03T13:04:48.650Z\",\n            \"status\": \"pending\",\n            \"updatedAt\": \"2025-04-03T13:04:48.651Z\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "accept request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6IjkxZmE4NzU0LTcwOTktNDZhYy05MDE4LTViZjQ3ZWEwODczMSIsImlhdCI6MTc0MzY4NTczMCwiZXhwIjoxNzQzODA1NzMwfQ.y2TUgF-MnLqZ0NuywT_VjukAQ5qeqzxOnGXedczO_wI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\":\"67ee8770fdaab4f173720966\" // Id of Request \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/buddy-request/accept",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"buddy-request",
+								"accept"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "accept request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"requestId\":\"67ec1991eeeebc689ee6007a\" // Id of Request \n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user/buddy-request/accept",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"buddy-request",
+										"accept"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "58"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3a-UQkhDS54uYq6tUVs9wcsu0FwDNs\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 01 Apr 2025 16:58:43 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Request accepted successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "reject request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imthcm5hdjEyMyIsImp0aSI6ImRhOTY1ZDE1LThjMGUtNGI2My1hMjk4LWQwZmUzZWQ3YzhiNyIsImlhdCI6MTc0MzUyNjQzMiwiZXhwIjoxNzQzNjQ2NDMyfQ.xu3uso3XfNcTXiTg4ysnn6o7aS2gI5rK80z5c29JCz0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\":\"67ec4c65ce3365bb7fad9f49\" // Id of Request \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/buddy-request/reject",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"buddy-request",
+								"reject"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "accept request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"requestId\":\"67ec1991eeeebc689ee6007a\" // Id of Request \n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/user/buddy-request/accept",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"buddy-request",
+										"accept"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "58"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3a-UQkhDS54uYq6tUVs9wcsu0FwDNs\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 01 Apr 2025 16:58:43 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Request accepted successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "cancel Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6ImE0NGNmMGY1LTE4ZTUtNDJjZi04ZjdhLWZjN2NkZmRjNjM5OSIsImlhdCI6MTc0MzUyNjEwNSwiZXhwIjoxNzQzNjQ2MTA1fQ.8uEaeBCeJrj6aQiWqoR3W-lcR8M1-JQ5b5moD26JI_8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\":\"67ec4c65ce3365bb7fad9f49\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/user/buddy-request/cancel",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"buddy-request",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all sent requests",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imthcm5hdjEyMyIsImp0aSI6ImRhOTY1ZDE1LThjMGUtNGI2My1hMjk4LWQwZmUzZWQ3YzhiNyIsImlhdCI6MTc0MzUyNjQzMiwiZXhwIjoxNzQzNjQ2NDMyfQ.xu3uso3XfNcTXiTg4ysnn6o7aS2gI5rK80z5c29JCz0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/user/buddy-request/sent",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"buddy-request",
+								"sent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all recived requests",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imthcm5hdjEyMyIsImp0aSI6ImRhOTY1ZDE1LThjMGUtNGI2My1hMjk4LWQwZmUzZWQ3YzhiNyIsImlhdCI6MTc0MzUyNjQzMiwiZXhwIjoxNzQzNjQ2NDMyfQ.xu3uso3XfNcTXiTg4ysnn6o7aS2gI5rK80z5c29JCz0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/user/buddy-request/received",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"buddy-request",
+								"received"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "get all recived requests",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:4000/user/buddy-request/received",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"user",
+										"buddy-request",
+										"received"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "930"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3a2-COmi5HuCgj2s0MISozxY+ajTK2I\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 01 Apr 2025 21:14:20 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Received requests retrieved successfully\",\n    \"data\": {\n        \"requests\": [\n            {\n                \"_id\": \"67ec4de9ce3365bb7fad9f57\",\n                \"sender\": {\n                    \"goal\": {\n                        \"title\": \"Became best in DSA\",\n                        \"target\": \"Solve 500 leetcode probleams\",\n                        \"year\": 2025,\n                        \"level\": \"INTERMEDIATE\"\n                    },\n                    \"_id\": \"67ec48bcce3365bb7fad9f33\",\n                    \"name\": \"Jaimin Detrojai\",\n                    \"username\": \"jaimin123\",\n                    \"mobile\": \"+918511633118\",\n                    \"interests\": [\n                        \"DSA\",\n                        \"BACKEND\"\n                    ],\n                    \"buddies\": [],\n                    \"blockedUsers\": [],\n                    \"pvsBuddy\": [\n                        \"67eab74c92b5cd2453ce48a4\"\n                    ],\n                    \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\",\n                    \"isMobileVerified\": true,\n                    \"isActive\": true,\n                    \"createdAt\": \"2025-04-01T20:12:44.685Z\",\n                    \"updatedAt\": \"2025-04-01T21:13:18.996Z\",\n                    \"__v\": 0,\n                    \"buddy\": null\n                },\n                \"receiver\": \"67eab74c92b5cd2453ce48a4\",\n                \"status\": \"pending\",\n                \"type\": \"buddy\",\n                \"expiresAt\": \"2025-05-01T21:13:24.798Z\",\n                \"createdAt\": \"2025-04-01T20:34:49.906Z\",\n                \"updatedAt\": \"2025-04-01T21:13:24.798Z\",\n                \"__v\": 0\n            }\n        ]\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Chat",
+			"item": [
+				{
+					"name": "create conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6IjkxZmE4NzU0LTcwOTktNDZhYy05MDE4LTViZjQ3ZWEwODczMSIsImlhdCI6MTc0MzY4NTczMCwiZXhwIjoxNzQzODA1NzMwfQ.y2TUgF-MnLqZ0NuywT_VjukAQ5qeqzxOnGXedczO_wI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\":\"personal\", // another type is community\n    \"participants\":[\"67ecf2e55e68615999459acb\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/chat/conversation",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"chat",
+								"conversation"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "personal conversation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\":\"personal\", // another type is community\n    \"participants\":[\"67ecf2e55e68615999459acb\"]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/chat/conversation",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"chat",
+										"conversation"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "317"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"13d-8JxVS+FDZhORh/WQ+si/qxLtFtY\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 03 Apr 2025 17:14:37 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Conversation created successfully\",\n    \"data\": {\n        \"type\": \"personal\",\n        \"participants\": [\n            \"67ec48bcce3365bb7fad9f33\",\n            \"67ecf2e55e68615999459acb\"\n        ],\n        \"readBy\": [\n            \"67ec48bcce3365bb7fad9f33\"\n        ],\n        \"_id\": \"67eec1fd1afc9ee54c9fa2c4\",\n        \"createdAt\": \"2025-04-03T17:14:37.808Z\",\n        \"updatedAt\": \"2025-04-03T17:14:37.808Z\",\n        \"__v\": 0\n    }\n}"
+						},
+						{
+							"name": "community create",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"type\":\"community\", // another type is community\n    \"title\":\"JEE MAINS\"\n    \n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/chat/conversation",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"chat",
+										"conversation"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "311"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"137-uohgLs+BQnYtf7XwhCeoZAe9HnI\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 03 Apr 2025 17:45:11 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Conversation created successfully\",\n    \"data\": {\n        \"title\": \"JEE MAINS\",\n        \"type\": \"community\",\n        \"participants\": [\n            \"67ec48bcce3365bb7fad9f33\"\n        ],\n        \"readBy\": [\n            \"67ec48bcce3365bb7fad9f33\"\n        ],\n        \"_id\": \"67eec927f364ff6f271db148\",\n        \"createdAt\": \"2025-04-03T17:45:11.637Z\",\n        \"updatedAt\": \"2025-04-03T17:45:11.637Z\",\n        \"__v\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "get all conversation of user ",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6IjkxZmE4NzU0LTcwOTktNDZhYy05MDE4LTViZjQ3ZWEwODczMSIsImlhdCI6MTc0MzY4NTczMCwiZXhwIjoxNzQzODA1NzMwfQ.y2TUgF-MnLqZ0NuywT_VjukAQ5qeqzxOnGXedczO_wI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/chat/conversation",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"chat",
+								"conversation"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "get all conversation of user",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/chat/conversation",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"chat",
+										"conversation"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1255"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4e7-oQzfpiNsKWHTdiGEbJZr1q8Vcvg\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 03 Apr 2025 18:14:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Conversations retrieved successfully\",\n    \"data\": [\n        {\n            \"_id\": \"67eec927f364ff6f271db148\",\n            \"title\": \"JEE MAINS\",\n            \"type\": \"community\",\n            \"participants\": [\n                {\n                    \"_id\": \"67ec48bcce3365bb7fad9f33\",\n                    \"username\": \"jaimin123\",\n                    \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\"\n                },\n                {\n                    \"_id\": \"67ecf2e55e68615999459acb\",\n                    \"username\": \"test1\",\n                    \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\"\n                }\n            ],\n            \"readBy\": [\n                \"67ec48bcce3365bb7fad9f33\"\n            ],\n            \"createdAt\": \"2025-04-03T17:45:11.637Z\",\n            \"updatedAt\": \"2025-04-03T18:13:45.765Z\",\n            \"__v\": 0\n        },\n        {\n            \"_id\": \"67eec1fd1afc9ee54c9fa2c4\",\n            \"type\": \"personal\",\n            \"participants\": [\n                {\n                    \"_id\": \"67ec48bcce3365bb7fad9f33\",\n                    \"username\": \"jaimin123\",\n                    \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\"\n                },\n                {\n                    \"_id\": \"67ecf2e55e68615999459acb\",\n                    \"username\": \"test1\",\n                    \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\"\n                }\n            ],\n            \"readBy\": [\n                \"67ec48bcce3365bb7fad9f33\"\n            ],\n            \"createdAt\": \"2025-04-03T17:14:37.808Z\",\n            \"updatedAt\": \"2025-04-03T17:14:37.808Z\",\n            \"__v\": 0\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "get specific conversation of user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6IjkxZmE4NzU0LTcwOTktNDZhYy05MDE4LTViZjQ3ZWEwODczMSIsImlhdCI6MTc0MzY4NTczMCwiZXhwIjoxNzQzODA1NzMwfQ.y2TUgF-MnLqZ0NuywT_VjukAQ5qeqzxOnGXedczO_wI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:4000/chat/conversation/67eec1fd1afc9ee54c9fa2c4",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"chat",
+								"conversation",
+								"67eec1fd1afc9ee54c9fa2c4"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "get specific  conversation",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:4000/chat/conversation/67eec1fd1afc9ee54c9fa2c4",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"chat",
+										"conversation",
+										"67eec1fd1afc9ee54c9fa2c4"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "668"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"29c-MzoNYrMPdG24pTPuA4Y+Bv/auJ4\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 03 Apr 2025 17:36:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Conversation retrieved successfully\",\n    \"data\": {\n        \"conversation\": {\n            \"_id\": \"67eec1fd1afc9ee54c9fa2c4\",\n            \"type\": \"personal\",\n            \"participants\": [\n                {\n                    \"_id\": \"67ec48bcce3365bb7fad9f33\",\n                    \"username\": \"jaimin123\",\n                    \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\"\n                },\n                {\n                    \"_id\": \"67ecf2e55e68615999459acb\",\n                    \"username\": \"test1\",\n                    \"avatar\": \"https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg\"\n                }\n            ],\n            \"readBy\": [\n                \"67ec48bcce3365bb7fad9f33\"\n            ],\n            \"createdAt\": \"2025-04-03T17:14:37.808Z\",\n            \"updatedAt\": \"2025-04-03T17:14:37.808Z\",\n            \"__v\": 0\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "delete conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImphaW1pbjEyMyIsImp0aSI6IjkxZmE4NzU0LTcwOTktNDZhYy05MDE4LTViZjQ3ZWEwODczMSIsImlhdCI6MTc0MzY4NTczMCwiZXhwIjoxNzQzODA1NzMwfQ.y2TUgF-MnLqZ0NuywT_VjukAQ5qeqzxOnGXedczO_wI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/chat/conversation/67eec2821afc9ee54c9fa2cd",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"chat",
+								"conversation",
+								"67eec2821afc9ee54c9fa2cd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "join conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QxIiwianRpIjoiZGIwNWEzYTEtMTgxYS00NTg4LTk5MzItMzNhODNiNThkNDkzIiwiaWF0IjoxNzQzNzAzOTY0LCJleHAiOjE3NzUyNjE1NjR9.DI9JG_QurSanHwGA_Wv2eYtzrJ_MscJEai6uE3wNbjc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:4000/chat/conversation/join/67eec927f364ff6f271db148",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"chat",
+								"conversation",
+								"join",
+								"67eec927f364ff6f271db148"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4000/",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
