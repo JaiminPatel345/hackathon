@@ -1,7 +1,8 @@
+import {TaskCategory} from "@/types/task";
+import {IConversationType, IMessageType} from "@/types/chat";
+
 //---------- User -----------
-import {TaskCategory} from "./task.type.js";
-import {IConversationType} from "./conversation.types.js";
-import {IMessageType} from "./message.types.js";
+
 
 export interface ILoginRequest {
   identifier: string,
