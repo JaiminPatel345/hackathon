@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
-export const IMessageType = {
-  TEXT: "text",
-  RESOURCE: "resource",
-  MEETING: "meeting",
-} as const;
+export enum IMessageType  {
+  TEXT= "text",
+  RESOURCE= "resource",
+  MEETING= "meeting",
+}
 
 
 export interface IMessage extends Document {

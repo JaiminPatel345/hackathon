@@ -1,7 +1,7 @@
 //---------- User -----------
 import {TaskCategory} from "./task.type.js";
 import {IConversationType} from "./conversation.types.js";
-import {IMessageType} from "./message.types.js";
+import {IMessageType, IResourceType} from "./message.types.js";
 
 export interface ILoginRequest {
   identifier: string,
@@ -60,9 +60,18 @@ export interface IUpdateConversationRequest {
 
 export interface ISendMessageRequest {
   conversationId: string;
-  content: string;
-  type?: typeof IMessageType[keyof typeof IMessageType];
+  content?: string;
+  type?: IMessageType;
   replyTo?: string;
+  resource?: IResourceInput; // Single resource instead of array
+}
+
+export interface IResourceInput {
+  type: IResourceType;
+  filename: string;
+  url: string;
+  contentType: string;
+  size: number;
 }
 
 export interface IEditMessageRequest {

@@ -2,7 +2,7 @@ import express from 'express';
 import {isAuthenticated} from "../utiles/verifyRequest/isAuthenticated.js";
 import * as chatController from '../controller/chat.controller.js';
 import {verifyChatRequest} from "../utiles/verifyRequest/chatRequest.js";
-import {joinCommunity} from "../controller/chat.controller.js";
+import * as resourceController from "../controller/resource.controller.js";
 
 const router = express.Router();
 
@@ -21,5 +21,7 @@ router.put('/message', isAuthenticated, chatController.editMessage);
 router.delete('/message/:messageId', isAuthenticated, chatController.deleteMessage);
 
 router.put('/read', isAuthenticated, chatController.markConversationAsRead);
+
+router.get('/resource', isAuthenticated, resourceController.getResourcesByType);
 
 export default router;

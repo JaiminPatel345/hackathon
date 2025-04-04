@@ -14,12 +14,13 @@ import {
 } from "../types/request.types.js";
 import {getUserFromRequest} from "../utiles/userHelper.js";
 import {IConversation, IConversationType} from "../types/conversation.types.js";
-import {IMessageType} from "../types/message.types.js";
+import {IMessageType, IResourceType} from "../types/message.types.js";
 import {
   getConversationByIdFromDB,
   getMessageById,
   validateConversationParticipant
 } from "../utiles/chatHelper.js";
+import Resource from "../model/resource.model.js";
 
 // Create a new conversation
 export const createConversation = async (req: Request, res: Response) => {
@@ -207,44 +208,89 @@ export const sendMessage = async (req: Request, res: Response) => {
       conversationId,
       content,
       type = IMessageType.TEXT,
-      replyTo
+      replyTo,
+      resource
     }: ISendMessageRequest = req.body;
 
     const user = await getUserFromRequest(req);
     const userId = user._id;
-
     const conversation = await getConversationByIdFromDB(conversationId);
-
-    // Ensure user is a participant
     validateConversationParticipant(conversation, userId);
 
-    // Create new message
-    const newMessage = new Message({
-      conversation: conversationId,
-      sender: userId,
-      type,
-      content,
-      deletedFor: [],
-      isDeleted: false,
-      isEdited: false,
-      ...(replyTo && {replyTo})
-    });
+    let newMessage: any;
 
-    await newMessage.save();
+    if (type === IMessageType.RESOURCE) {
+      // Validate resource exists for RESOURCE type
+      if (!resource) {
+        throw new AppError("Resource is required for RESOURCE message type", 400);
+      }
 
-    // Update conversation with last message and read status
-    conversation.lastMessage = newMessage._id;
-    conversation.readBy = [userId]; // Reset read status to only sender
-    await conversation.save();
+      // Create message first
+      newMessage = new Message({
+        conversation: conversationId,
+        sender: userId,
+        type: IMessageType.RESOURCE,
+        resource: [],
+        ...(replyTo && {replyTo})
+      });
+      await newMessage.save();
 
-    // Populate sender info before returning
-    await newMessage.populate('sender', 'username avatar');
-    if (replyTo) {
-      await newMessage.populate('replyTo');
+      // Create single resource
+      const newResource = new Resource({
+        type: resource.type,
+        filename: resource.filename,
+        url: resource.url,
+        contentType: resource.contentType,
+        size: resource.size,
+        message: newMessage._id,
+        conversation: conversationId,
+        uploader: userId
+      });
+
+      const savedResource = await newResource.save();
+      newMessage.resources = [savedResource._id];
+      await newMessage.save();
+    } else {
+      // Handle TEXT message with URL detection
+      newMessage = new Message({
+        conversation: conversationId,
+        sender: userId,
+        type,
+        content,
+        ...(replyTo && {replyTo})
+      });
+      await newMessage.save();
+
+      // URL detection logic remains unchanged
+      if (content) {
+        const urlRegex = /https?:\/\/[^\s]+/g;
+        const urls = content.match(urlRegex) || [];
+
+        if (urls.length > 0) {
+          const linkResources = urls.map(url => new Resource({
+            type: IResourceType.LINK,
+            url,
+            message: newMessage._id,
+            conversation: conversationId,
+            uploader: userId
+          }));
+
+          const savedLinks = await Resource.insertMany(linkResources);
+          newMessage.resources = savedLinks.map(link => link._id);
+          await newMessage.save();
+        }
+      }
     }
 
-    res.status(201).json(formatResponse(true, "Message sent successfully", newMessage));
+    // Update conversation (unchanged)
+    conversation.lastMessage = newMessage._id;
+    conversation.readBy = [userId];
+    await conversation.save();
 
+    // Populate and return
+    await newMessage.populate('sender', 'username avatar');
+    if (replyTo) await newMessage.populate('replyTo');
+    res.status(201).json(formatResponse(true, "Message sent successfully", newMessage));
   } catch (error) {
     handleError(error, res, "Error sending message");
   }
