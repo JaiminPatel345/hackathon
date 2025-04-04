@@ -10,8 +10,7 @@ class UserProfileService {
 
   Future<UserProfile?> fetchUserProfileById(String userId) async {
     try {
-      final userId = '67ee253df8af66ed55babc72';
-
+      final userId = '67ef5d766b88ead0026e99e4';
       print('Fetching profile for user ID: $userId');
       final response = await http.get(
         Uri.parse('$baseUrl/user/profile/$userId'),

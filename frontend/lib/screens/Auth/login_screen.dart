@@ -83,7 +83,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       // Navigate to home screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } else if (mounted) {
       // Show error message

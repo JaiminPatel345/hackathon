@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend/screens/home_screen.dart' show HomeScreen;
+import 'package:frontend/screens/home_screen.dart' show HomePage, HomeScreen;
 import '../../components/my_button.dart';
 import '../../components/my_textfield.dart';
 
@@ -143,7 +143,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> with SingleTicker
           Timer(const Duration(seconds: 3), () {
             if (mounted) {
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => HomeScreen()),
+                MaterialPageRoute(builder: (context) => HomePage()),
                     (route) => false,
               );
             }
