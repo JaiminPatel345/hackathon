@@ -45,7 +45,7 @@ export default function VerifyOtp() {
                 username: username as string,
                 givenOtp: otpValue
             })).unwrap();
-            router.replace(`../../(tabs)?id=${username}`);
+            router.replace(`/user/profileSetup`);
         } catch (error) {
             console.error('OTP verification failed:', error);
             // Could add error handling UI here
