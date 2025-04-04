@@ -1,753 +1,520 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  // Create state variables for user's checklist items only
-  List<bool> myChecklistStatus = [false, true, false, false];
-  // Buddy's checklist is fixed and read-only
-  final List<bool> buddyChecklistStatus = [true, false, false, true];
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  int _currentIndex = 0;
+  final List<Task> _tasks = [];
+  late AnimationController _fabAnimationController;
+  late Animation<double> _fabRotationAnimation;
+  late AnimationController _taskListAnimationController;
+  bool _isLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Sample data
+    _tasks.addAll([
+      Task("Complete project proposal", DateTime.now().add(const Duration(days: 2)), 'Work', Colors.blue),
+      Task("Buy groceries", DateTime.now().add(const Duration(days: 1)), 'Personal', Colors.green),
+      Task("Call mom", DateTime.now(), 'Family', Colors.orange),
+    ]);
+
+    // Initialize animation controllers
+    _fabAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _fabRotationAnimation = Tween<double>(
+      begin: 0,
+      end: math.pi / 4,
+    ).animate(CurvedAnimation(
+      parent: _fabAnimationController,
+      curve: Curves.easeInOut,
+    ));
+
+    _taskListAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
+    // Simulate loading delay
+    Future.delayed(const Duration(milliseconds: 600), () {
+      setState(() {
+        _isLoaded = true;
+      });
+      _taskListAnimationController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    _taskListAnimationController.dispose();
+    super.dispose();
+  }
+
+  void _onNavItemTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void _showAddTaskDialog() {
+    String title = '';
+    String category = 'Personal';
+    DateTime dueDate = DateTime.now().add(const Duration(days: 1));
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Create New Task'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Task Title',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    title = value;
+                  },
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(
+                    labelText: 'Category',
+                    border: OutlineInputBorder(),
+                  ),
+                  value: category,
+                  items: const [
+                    DropdownMenuItem(value: 'Personal', child: Text('Personal')),
+                    DropdownMenuItem(value: 'Work', child: Text('Work')),
+                    DropdownMenuItem(value: 'Family', child: Text('Family')),
+                    DropdownMenuItem(value: 'Health', child: Text('Health')),
+                  ],
+                  onChanged: (value) {
+                    category = value!;
+                  },
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  title: Text('Due Date: ${dueDate.toString().substring(0, 10)}'),
+                  trailing: const Icon(Icons.calendar_today),
+                  onTap: () async {
+                    final selectedDate = await showDatePicker(
+                      context: context,
+                      initialDate: dueDate,
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                    );
+                    if (selectedDate != null) {
+                      dueDate = selectedDate;
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Create'),
+              onPressed: () {
+                if (title.isNotEmpty) {
+                  setState(() {
+                    _tasks.add(Task(
+                        title,
+                        dueDate,
+                        category,
+                        category == 'Work' ? Colors.blue :
+                        category == 'Personal' ? Colors.green :
+                        category == 'Family' ? Colors.orange :
+                        Colors.purple
+                    ));
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Background gradient decoration
-            Container(
-              height: 220,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF4A2D82), Color(0xFF6B46C1)],
-                ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                ),
-              ),
-            ),
-            // Main content
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    _buildAppBar(),
-                    const SizedBox(height: 16),
-                    _buildWelcomeText(),
-                    const SizedBox(height: 24),
-                    _buildBuddySearchCard(),
-                    const SizedBox(height: 24),
-                    _buildExamCountdown(),
-                    const SizedBox(height: 24),
-                    _buildStudySprintCard(),
-                    const SizedBox(height: 24),
-                    _buildDailyChecklist(),
-                    const SizedBox(height: 80),
-                  ],
-                ),
+            const Text('Task Buddy'),
+            Text(
+              'Welcome back, Alex',
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.white70
+                    : Colors.grey[300],
               ),
             ),
           ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Search for buddies',
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(title: const Text('Find Buddies')),
+                        body: const Center(child: Text('Buddy search page')),
+                      )
+                  )
+              );
+            },
+          ),
+          const CircleAvatar(
+            radius: 16,
+            backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+          ),
+          const SizedBox(width: 16),
+        ],
+        elevation: 0,
+      ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          // Home/Tasks screen
+          _isLoaded ? AnimatedTaskList(
+            tasks: _tasks,
+            animationController: _taskListAnimationController,
+          ) : const Center(child: CircularProgressIndicator()),
+
+          // Calendar screen
+          const Center(child: Text('Calendar View')),
+
+          // Stats screen
+          const Center(child: Text('Stats View')),
+
+          // Profile screen
+          const Center(child: Text('Profile View')),
+        ],
+      ),
+      floatingActionButton: RotationTransition(
+        turns: _fabRotationAnimation,
+        child: FloatingActionButton(
+          onPressed: () {
+            _fabAnimationController.forward(from: 0);
+            _showAddTaskDialog();
+          },
+          child: const Icon(Icons.add),
+          elevation: 4,
         ),
       ),
-      floatingActionButton: _buildFloatingActionButton(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onNavItemTapped,
+        type: BottomNavigationBarType.fixed,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Calendar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Stats',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+      ),
     );
   }
+}
 
-  Widget _buildAppBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Container(
-              height: 44,
-              width: 44,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withOpacity(0.3)),
-              ),
-              child: const Icon(
-                Icons.person,
-                color: Colors.white,
-                size: 26,
-              ),
-            ),
-            const SizedBox(width: 12),
-            const Text(
-              'StudyBuddy',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(left: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: const Color(0xFF34C759),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                'PRO',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
+class AnimatedTaskList extends StatelessWidget {
+  final List<Task> tasks;
+  final AnimationController animationController;
+
+  const AnimatedTaskList({
+    Key? key,
+    required this.tasks,
+    required this.animationController,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: _buildHeaderSection(),
           ),
-          child: const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 24),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+                (context, index) {
+              final task = tasks[index];
+
+              // Staggered animation for tasks
+              final itemAnimation = Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animationController,
+                curve: Interval(
+                  index * 0.1,
+                  0.6 + index * 0.1,
+                  curve: Curves.easeOutQuart,
+                ),
+              ));
+
+              return SlideTransition(
+                position: itemAnimation,
+                child: FadeTransition(
+                  opacity: animationController,
+                  child: TaskTile(task: task),
+                ),
+              );
+            },
+            childCount: tasks.length,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildWelcomeText() {
+  Widget _buildHeaderSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Hello, Jaiminbhai',
+          'My Tasks',
           style: TextStyle(
-            fontSize: 28,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         Text(
-          'Ready to ace your exams?',
-          style: TextStyle(
+          'You have ${tasks.length} tasks to complete',
+          style: const TextStyle(
             fontSize: 16,
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.grey,
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildBuddySearchCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEAE4FF),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.search,
-                  color: Color(0xFF4A2D82),
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Find a Study Buddy',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    'Match with similar goals',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 46,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF6F5FA),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.search,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Search by subject or goal...',
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                height: 46,
-                width: 46,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4A2D82),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: const Icon(
-                  Icons.filter_list,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExamCountdown() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFf7f5ff), Color(0xFFEAE4FF)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4A2D82).withOpacity(0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF4A2D82).withOpacity(0.2)),
-                  ),
-                  child: const Text(
-                    'JEE EXAM',
-                    style: TextStyle(
-                      color: Color(0xFF4A2D82),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  '40',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4A2D82),
-                  ),
-                ),
-                const Text(
-                  'Days Remaining',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 80,
-            width: 80,
-            padding: const EdgeInsets.all(8),
+        const SizedBox(height: 16),
+        FadeTransition(
+          opacity: animationController,
+          child: Container(
+            height: 100,
             decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
+              gradient: LinearGradient(
+                colors: [Colors.purpleAccent.shade100, Colors.blueAccent.shade100],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
-              child: CircularProgressIndicator(
-                value: 0.55,
-                backgroundColor: Colors.grey.shade200,
-                valueColor: const AlwaysStoppedAnimation<Color>(
-                  Color(0xFF4A2D82),
+              child: ListTile(
+                leading: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.trending_up, color: Colors.blue),
                 ),
-                strokeWidth: 6,
+                title: const Text(
+                  'Weekly Progress',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: const Text(
+                  '68% of tasks completed',
+                  style: TextStyle(color: Colors.white70),
+                ),
+                trailing: const Icon(Icons.arrow_forward, color: Colors.white),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+}
+
+class TaskTile extends StatefulWidget {
+  final Task task;
+
+  const TaskTile({Key? key, required this.task}) : super(key: key);
+
+  @override
+  State<TaskTile> createState() => _TaskTileState();
+}
+
+class _TaskTileState extends State<TaskTile> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isCompleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
     );
   }
 
-  Widget _buildStudySprintCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Column(
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final daysRemaining = widget.task.dueDate.difference(DateTime.now()).inDays;
+    final isOverdue = daysRemaining < 0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              leading: InkWell(
+                onTap: () {
+                  if (_isCompleted) {
+                    _controller.reverse();
+                  } else {
+                    _controller.forward();
+                  }
+                  setState(() {
+                    _isCompleted = !_isCompleted;
+                  });
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: widget.task.color,
+                      width: 2,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: _isCompleted
+                        ? Icon(
+                      Icons.check,
+                      color: widget.task.color,
+                      size: 20,
+                    )
+                        : Icon(
+                      Icons.circle,
+                      color: Colors.transparent,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+              title: Text(
+                widget.task.title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  decoration: _isCompleted ? TextDecoration.lineThrough : null,
+                  color: _isCompleted ? Colors.grey : null,
+                ),
+              ),
+              subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 4),
                   Text(
-                    'Study Sprint',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    widget.task.category,
+                    style: TextStyle(
+                      color: widget.task.color,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
+                  const SizedBox(height: 4),
                   Text(
-                    'You\'re catching up!',
-                    style: TextStyle(color: Colors.grey, fontSize: 14),
+                    isOverdue
+                        ? 'Overdue by ${-daysRemaining} days'
+                        : daysRemaining == 0
+                        ? 'Due today'
+                        : 'Due in $daysRemaining days',
+                    style: TextStyle(
+                      color: isOverdue ? Colors.red : Colors.grey,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEAE4FF),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(
-                      Icons.trending_up,
-                      color: Color(0xFF4A2D82),
-                      size: 16,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      'View All',
-                      style: TextStyle(
-                        color: Color(0xFF4A2D82),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              _buildStudyMetricCard('Study Hours', '4', 'hrs', 0.4, const Color(0xFF4A2D82)),
-              const SizedBox(width: 10),
-              _buildStudyMetricCard('Chapters', '10', 'done', 0.65, const Color(0xFF34C759)),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              _buildStudyMetricCard('Mock Tests', '75', '%', 0.75, Colors.orange),
-              const SizedBox(width: 10),
-              _buildStudyMetricCard('Revision', '2', 'rounds', 0.4, Colors.blue),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF6F5FA),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.person,
-                  color: Color(0xFF4A2D82),
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 10),
-              const Text(
-                'You',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(width: 20),
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF6F5FA),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.people,
-                  color: Color(0xFF34C759),
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 10),
-              const Text(
-                'Your Buddy',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStudyMetricCard(String title, String value, String unit, double progress, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF6F5FA),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: Colors.grey[700],
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  unit,
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(color),
-              minHeight: 4,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ],
+              trailing: const Icon(Icons.more_vert),
+            );
+          },
         ),
       ),
     );
   }
+}
 
-  Widget _buildDailyChecklist() {
-    final List<String> tasks = [
-      'Study for at least 3 hours',
-      'Solve previous year\'s questions',
-      'Complete 20+ MCQs',
-      'Discuss doubts with a friend',
-    ];
+class Task {
+  final String title;
+  final DateTime dueDate;
+  final String category;
+  final Color color;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Daily Checklist',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEAE4FF),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Text(
-                  '1/4 Done',
-                  style: TextStyle(
-                    color: Color(0xFF4A2D82),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          for (int i = 0; i < tasks.length; i++) ...[
-            _buildChecklistItem(tasks[i], i),
-            if (i < tasks.length - 1) const Divider(height: 20),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildChecklistItem(String task, int index) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 7,
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    myChecklistStatus[index] = !myChecklistStatus[index];
-                  });
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  height: 24,
-                  width: 24,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(
-                      color: myChecklistStatus[index]
-                          ? const Color(0xFF34C759)
-                          : Colors.grey.shade400,
-                    ),
-                    color: myChecklistStatus[index]
-                        ? const Color(0xFF34C759)
-                        : Colors.transparent,
-                  ),
-                  child: myChecklistStatus[index]
-                      ? const Icon(
-                    Icons.check,
-                    size: 16,
-                    color: Colors.white,
-                  )
-                      : null,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  task,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: myChecklistStatus[index] ? Colors.grey : Colors.black87,
-                    decoration: myChecklistStatus[index]
-                        ? TextDecoration.lineThrough
-                        : null,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                'Buddy:',
-                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                height: 22,
-                width: 22,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  color: buddyChecklistStatus[index]
-                      ? const Color(0xFF34C759)
-                      : Colors.transparent,
-                  border: Border.all(
-                    color: buddyChecklistStatus[index]
-                        ? const Color(0xFF34C759)
-                        : Colors.grey.shade400,
-                  ),
-                ),
-                child: buddyChecklistStatus[index]
-                    ? const Icon(Icons.check, size: 14, color: Colors.white)
-                    : null,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    return Container(
-      height: 60,
-      width: 60,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF4A2D82), Color(0xFF6B46C1)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4A2D82).withOpacity(0.4),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: const Icon(
-        Icons.add,
-        color: Colors.white,
-        size: 30,
-      ),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      height: 70,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 0,
-            blurRadius: 10,
-            offset: const Offset(0, -1),
-          ),
-        ],
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.home, 'Home', isActive: true),
-          _buildNavItem(Icons.play_circle_outline, 'Goals'),
-          const SizedBox(width: 60),
-          _buildNavItem(Icons.bookmark_border, 'Resources'),
-          _buildNavItem(Icons.person_outline, 'Profile'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, {bool isActive = false}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? const Color(0xFF4A2D82) : Colors.grey,
-          size: 26,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: isActive ? const Color(0xFF4A2D82) : Colors.grey,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-          ),
-        ),
-      ],
-    );
-  }
+  Task(this.title, this.dueDate, this.category, this.color);
 }

@@ -1,9 +1,11 @@
 // providers/auth_provider.dart
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/services/token_service.dart';
 import '../models/user_model.dart';
+import '../screens/Auth/login_screen.dart';
 import '../services/auth_service.dart';
-
 // Auth state to track authentication status
 class AuthState {
   final bool isAuthenticated;
@@ -189,13 +191,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   // Logout method
   Future<void> logout() async {
-    state = state.copyWith(isLoading: true);
+    state = state.copyWith(isLoading: true, errorMessage: null, isAuthenticated: false);
 
     try {
-      // API call would go here if needed
-
-      // Clear user data
       state = AuthState();
+
+
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -203,6 +204,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
     }
   }
+
 }
 
 // Create a provider for ApiProvider

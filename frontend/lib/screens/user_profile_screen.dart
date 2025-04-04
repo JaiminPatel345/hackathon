@@ -2,18 +2,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:frontend/components/req_button.dart';
+import '../components/send_req.dart';
+import '../providers/buddy_request_provider.dart';
 import '../providers/user_profile_provider.dart';
+import '../services/buddy_request_service.dart';
 
 class OtherUserScreen extends ConsumerWidget {
   final String userId;
-
   const OtherUserScreen({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    print('in user profile id $userId');
     final profileState = ref.watch(userProfileProvider(userId));
-
+    print('in user profile id $userId');
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Profile'),
@@ -24,12 +25,13 @@ class OtherUserScreen extends ConsumerWidget {
               ref.read(userProfileProvider(userId).notifier).fetchProfile();
             },
           ),
-          ReqButton(onTap: () {}),
         ],
       ),
       body: _buildBody(context, profileState, ref),
     );
   }
+
+
 
   Widget _buildBody(BuildContext context, ProfileState state, WidgetRef ref) {
     if (state.isLoading) {
@@ -64,7 +66,7 @@ class OtherUserScreen extends ConsumerWidget {
         child: Text('No profile data available'),
       );
     }
-
+    final profileState = ref.watch(currentUserProfileProvider);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -77,8 +79,6 @@ class OtherUserScreen extends ConsumerWidget {
                   radius: 60,
                   backgroundImage: NetworkImage(userProfile.avatar),
                 ),
-                const SizedBox(height: 16),
-                ReqButton(onTap: () {}),
                 const SizedBox(height: 16),
                 Text(
                   userProfile.name,
@@ -94,6 +94,8 @@ class OtherUserScreen extends ConsumerWidget {
                     color: Colors.grey[600],
                   ),
                 ),
+                const SizedBox(width: 10,),
+                SendBuddyRequestButton(userId: userId, type: 'buddy'),
               ],
             ),
           ),

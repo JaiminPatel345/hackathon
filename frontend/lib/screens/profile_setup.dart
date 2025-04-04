@@ -280,7 +280,7 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
           // Navigate regardless of API success
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) => const HomePage()),
           );
         }
       } catch (e) {
@@ -297,7 +297,7 @@ class _ProfileSetupState extends ConsumerState<ProfileSetup> with SingleTickerPr
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
 
         }
