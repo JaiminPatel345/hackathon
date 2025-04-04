@@ -1,24 +1,32 @@
-export interface UserGoal {
-  title: string;       // E.g. "JEE Main"
-  target: string;      // E.g. "Rank under 3 digits"
-  year: string;        // E.g. "2027"
-  level: 'Beginner' | 'Intermediate' | 'Advanced';
-}
-
-export interface User {
-  id: string;
+export interface IUser {
+  _id: string;
   name: string;
-  email: string;
-  avatar?: string;
-  goal?: UserGoal;
-  createdAt: string;
-  updatedAt: string;
+  username: string;
+  email?: string;
+  mobile: string;
+  goal: {
+    title: string;
+    target: string;
+    year: number;
+    level: IGoalLevel;
+  };
+  interests: string[];
+  buddy: string | null;
+  buddies: string[];
+  blockedUsers: string[];
+  pvsBuddy: string[];
+  avatar: string;
+  isMobileVerified: boolean;
+  isActive: boolean;
+  isAdmin: boolean;
+  communities: string[];
+  lastActive?: string;
+  status?: string;
+  conversations: string[];
 }
 
-export interface BuddyRequest {
-  id: string;
-  from: User;
-  to: User;
-  status: 'pending' | 'accepted' | 'rejected';
-  createdAt: string;
+export enum IGoalLevel {
+  EXPERT = 'EXPERT',
+  INTERMEDIATE = 'INTERMEDIATE',
+  BEGINNER = 'BEGINNER',
 }

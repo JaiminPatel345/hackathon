@@ -1,28 +1,38 @@
-// src/api/task.api.ts
-import axiosInstance from './axiosInstance';
-import { Task } from '../types/task';
+import {axiosInstance} from '@/api/axiosInstance';
+import {ITask} from '@/types/task';
 
-export const getTasks = async () => {
-  const response = await axiosInstance.get('/tasks');
-  return response.data;
+export const createTask = async (
+    token: string,
+    content: string,
+    category: string,
+    isPrivate: boolean
+): Promise<ITask> => {
+  const response = await axiosInstance.post(
+      '/task/',
+      {content, category, isPrivate},
+      {headers: {Authorization: `Bearer ${token}`}}
+  );
+  return response.data.data;
 };
 
-export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => {
-  const response = await axiosInstance.post('/tasks', taskData);
-  return response.data;
+export const toggleTaskStatus = async (token: string, taskId: string): Promise<ITask> => {
+  const response = await axiosInstance.put(
+      '/task/toggle-status',
+      {taskId},
+      {headers: {Authorization: `Bearer ${token}`}}
+  );
+  return response.data.data;
 };
 
-export const updateTask = async (taskId: string, taskData: Partial<Task>) => {
-  const response = await axiosInstance.put(`/tasks/${taskId}`, taskData);
-  return response.data;
+export const deleteTask = async (token: string, taskId: string): Promise<void> => {
+  await axiosInstance.delete(`/task/${taskId}`, {
+    headers: {Authorization: `Bearer ${token}`},
+  });
 };
 
-export const deleteTask = async (taskId: string) => {
-  const response = await axiosInstance.delete(`/tasks/${taskId}`);
-  return response.data;
-};
-
-export const completeTask = async (taskId: string) => {
-  const response = await axiosInstance.post(`/tasks/${taskId}/complete`);
-  return response.data;
+export const getAllTasks = async (token: string): Promise<ITask[]> => {
+  const response = await axiosInstance.get('/task/', {
+    headers: {Authorization: `Bearer ${token}`},
+  });
+  return response.data.data.tasks || [];
 };

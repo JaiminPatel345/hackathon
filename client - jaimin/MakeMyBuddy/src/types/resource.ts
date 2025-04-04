@@ -1,11 +1,22 @@
-export type ResourceType = 'image' | 'pdf' | 'link';
+export enum IResourceType {
+  IMAGE = 'image',
+  VIDEO = 'video',
+  AUDIO = 'audio',
+  PDF = 'pdf',
+  DOCUMENT = 'document',
+  LINK = 'link',
+  OTHER = 'other',
+}
 
-export interface Resource {
-  id: string;
-  title: string;
-  type: ResourceType;
+export interface IResource {
+  _id: string;
+  type: IResourceType;
+  filename?: string;
   url: string;
-  createdBy: string; // User ID
-  createdAt: string;
-  updatedAt: string;
+  size?: number;
+  message: string;
+  conversation: string;
+  uploader: string;
+  isDeleted?: boolean;
+  contentType?: string;
 }

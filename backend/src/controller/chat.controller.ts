@@ -13,7 +13,7 @@ import {
   IUpdateConversationRequest
 } from "../types/request.types.js";
 import {getUserFromRequest} from "../utiles/userHelper.js";
-import {IConversationType} from "../types/conversation.types.js";
+import {IConversation, IConversationType} from "../types/conversation.types.js";
 import {IMessageType} from "../types/message.types.js";
 import {
   getConversationByIdFromDB,
@@ -158,9 +158,14 @@ export const joinCommunity = async (req: Request, res: Response) => {
       throw new AppError("Can't add in personal chat ", 404);
     }
 
-    const newConversation = await Conversation.findByIdAndUpdate(conversationId, {
+    const newConversation: IConversation | null = await Conversation.findByIdAndUpdate(conversationId, {
       $addToSet: {participants: userId},
     }, {new: true});
+
+    if (newConversation !== null) {
+      user.communities.push(newConversation._id as mongoose.Types.ObjectId);
+      await user.save();
+    }
 
 
     res.status(201).json(formatResponse(true, "Community joined successfully", {newConversation}));

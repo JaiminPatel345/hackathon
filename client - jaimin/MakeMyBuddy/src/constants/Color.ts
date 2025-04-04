@@ -22,7 +22,5 @@ export default {
   danger: '#ef4444', // Red 500
   warning: '#f59e0b', // Amber 500
   info: '#3b82f6', // Blue 500
-  light: '#f3f4f6', // Gray 100
-  dark: '#1f2937', // Gray 800
   gray: '#6b7280', // Gray 500
 };

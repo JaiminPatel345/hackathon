@@ -1,13 +1,22 @@
-export interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  dueDate: string;
-  priority: 'low' | 'medium' | 'high';
-  completed: boolean;
-  completedBy?: string; // User ID
-  createdBy: string;    // User ID
-  assignedTo: string[]; // Array of User IDs
+export enum TaskCategory {
+  Daily = 'Daily',
+  Weekly = 'Weekly',
+  Monthly = 'Monthly',
+  Yearly = 'Yearly',
+}
+
+export interface ITask {
+  _id: string;
+  content: string;
+  isDoneByMe: boolean;
+  isDoneByBuddy: boolean;
+  category: TaskCategory;
+  finishDate?: string;
+  isDeleted: boolean;
+  isPrivate: boolean;
+  participants: string[];
+  progressOfMe?: string;
+  progressOfBuddy?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,17 +1,43 @@
-export interface Message {
-  id: string;
-  chatId: string;
-  content: string;
-  sender: string; // User ID
-  createdAt: string;
+export enum IConversationType {
+  PERSONAL = 'personal',
+  COMMUNITY = 'community',
 }
 
-export interface Chat {
-  id: string;
-  name?: string;
-  isGroup: boolean;
-  participants: string[]; // Array of User IDs
-  lastMessage?: Message;
+export interface IConversation {
+  _id: string;
+  title?: string;
+  description?: string;
+  type: IConversationType;
+  participants: {
+    _id: string;
+    username: string;
+    avatar: string;
+  }[];
+  lastMessage?: string;
+  readBy: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const IMessageType = {
+  TEXT: 'text',
+  RESOURCE: 'resource',
+  MEETING: 'meeting',
+} as const;
+
+export type MessageType = typeof IMessageType[keyof typeof IMessageType];
+
+export interface IMessage {
+  _id: string;
+  conversation: string;
+  sender: string;
+  type: MessageType;
+  content?: string;
+  resources?: string[];
+  replyTo?: string;
+  deletedFor: string[];
+  isDeleted: boolean;
+  isEdited: boolean;
   createdAt: string;
   updatedAt: string;
 }

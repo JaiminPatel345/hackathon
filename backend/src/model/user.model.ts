@@ -71,7 +71,7 @@ const UserSchema = new Schema<IUser>({
   },
   communities: [{
     type: mongoose.Types.ObjectId,
-    ref: 'Community',
+    ref: 'Conversation',
   }],
   lastActive: {
     type: Date,
