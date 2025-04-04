@@ -44,11 +44,6 @@ export interface IToggleTaskStatusRequest {
 }
 
 
-//-------------User--------------
-
-
-
-
 //-----------Chat---------------
 export interface ICreateConversationRequest {
   title?: string;

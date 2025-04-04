@@ -16,6 +16,12 @@ export default function HomeScreen() {
   );
   const { user } = useSelector((state: RootState) => state.auth);
 
+  useEffect(() => {
+    if(!user){
+      router.push('/auth/login');
+    }
+  }, []);
+
   // Combine both sent and received requests for display
   const allBuddyRequests = [...sentRequests, ...receivedRequests];
 

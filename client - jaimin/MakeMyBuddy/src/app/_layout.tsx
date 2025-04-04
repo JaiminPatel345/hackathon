@@ -39,15 +39,22 @@ function AppContent() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {!isAuthenticated ? (
-        <Stack.Screen name="auth" />
-      ) : (
-        <>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="user" />
-          <Stack.Screen name="chat" />
-        </>
-      )}
+      <Stack.Screen 
+        name="auth" 
+        redirect={isAuthenticated} 
+      />
+      <Stack.Screen 
+        name="(tabs)" 
+        redirect={!isAuthenticated} 
+      />
+      <Stack.Screen 
+        name="user" 
+        redirect={!isAuthenticated} 
+      />
+      <Stack.Screen 
+        name="chat" 
+        redirect={!isAuthenticated} 
+      />
     </Stack>
   );
 }
