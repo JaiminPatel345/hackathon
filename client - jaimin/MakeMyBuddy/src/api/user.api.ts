@@ -1,5 +1,5 @@
 import {axiosInstance} from '@/api/axiosInstance';
-import {IUser} from '@/types/user';
+import {IUser, UpdateProfileRequest} from '@/types/user';
 
 export const getMyProfile = async (token: string): Promise<IUser> => {
   const response = await axiosInstance.get('/user/me', {
@@ -10,7 +10,7 @@ export const getMyProfile = async (token: string): Promise<IUser> => {
 
 export const updateProfile = async (
     token: string,
-    data: Partial<IUser>
+    data: UpdateProfileRequest
 ): Promise<IUser> => {
   const response = await axiosInstance.put('/user/update-profile', data, {
     headers: {Authorization: `Bearer ${token}`},

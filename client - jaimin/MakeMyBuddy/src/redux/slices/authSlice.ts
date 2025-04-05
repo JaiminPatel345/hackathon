@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IUser } from '@/types/user';
 import { loginUserThunk, registerUserThunk, verifyUserOtpThunk } from '../thunks/authThunks';
+import { updateProfileThunk } from '../thunks/userThunks';
 import { saveAuthData, clearAuthData } from '@/services/authService';
 
 interface AuthState {
@@ -10,6 +11,9 @@ interface AuthState {
   loading: boolean;
   error: string | null;
   registrationSuccess: boolean;
+  profileUpdateLoading: boolean;
+  profileUpdateError: string | null;
+  profileUpdateSuccess: boolean;
 }
 
 const initialState: AuthState = {
@@ -19,6 +23,9 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   registrationSuccess: false,
+  profileUpdateLoading: false,
+  profileUpdateError: null,
+  profileUpdateSuccess: false,
 };
 
 const authSlice = createSlice({
@@ -49,6 +56,11 @@ const authSlice = createSlice({
     },
     clearErrors: (state) => {
       state.error = null;
+      state.profileUpdateError = null;
+    },
+    clearProfileUpdateStatus: (state) => {
+      state.profileUpdateSuccess = false;
+      state.profileUpdateError = null;
     },
     initializeFromStorage: (
       state,
@@ -111,9 +123,38 @@ const authSlice = createSlice({
       .addCase(verifyUserOtpThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      
+    // Update Profile
+    builder
+      .addCase(updateProfileThunk.pending, (state) => {
+        state.profileUpdateLoading = true;
+        state.profileUpdateError = null;
+        state.profileUpdateSuccess = false;
+      })
+      .addCase(updateProfileThunk.fulfilled, (state, action) => {
+        state.profileUpdateLoading = false;
+        state.profileUpdateSuccess = true;
+        if (state.user) {
+          state.user = action.payload;
+          if (state.token) {
+            // Update storage with new user data
+            saveAuthData(state.token, action.payload);
+          }
+        }
+      })
+      .addCase(updateProfileThunk.rejected, (state, action) => {
+        state.profileUpdateLoading = false;
+        state.profileUpdateError = action.payload as string;
       });
   },
 });
 
-export const { setCredentials, logout, clearErrors, initializeFromStorage } = authSlice.actions;
+export const { 
+  setCredentials, 
+  logout, 
+  clearErrors, 
+  initializeFromStorage,
+  clearProfileUpdateStatus 
+} = authSlice.actions;
 export default authSlice.reducer;
