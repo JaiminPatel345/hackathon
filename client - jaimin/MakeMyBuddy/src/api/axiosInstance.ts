@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {getToken} from '@/services/authService';
 
-const BASE_URL = 'http://192.168.143.167:4000';
+const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
 export const axiosInstance = axios.create({
     baseURL: BASE_URL,

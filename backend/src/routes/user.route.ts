@@ -34,6 +34,9 @@ router.post('/buddy-request/cancel', isAuthenticated, buddyRequestController.can
 router.get('/buddy-request/sent', isAuthenticated, buddyRequestController.getSentRequests);
 router.get('/buddy-request/received', isAuthenticated, buddyRequestController.getReceivedRequests);
 
+//suggestions
+router.get('/suggestions', isAuthenticated, userController.suggestBuddies)
+
 // Admin buddy management routes
 router.post('/admin/make-buddy', isAuthenticated, isAdmin, adminController.adminMakeBuddy);
 router.post('/admin/remove-buddy', isAuthenticated, isAdmin, adminController.adminRemoveBuddy);

@@ -250,3 +250,140 @@ export const removeFromBuddies = async (req: Request, res: Response) => {
     handleError(error, res);
   }
 };
+
+export const suggestBuddies = async (req: Request, res: Response) => {
+  try {
+    const currentUser = await getUserFromRequest(req);
+
+    const excludeUserIds = [
+      currentUser._id,
+      ...(currentUser.buddy ? [currentUser.buddy] : []), //if have buddy
+      ...currentUser.blockedUsers,
+      ...currentUser.pvsBuddy,
+      ...currentUser.buddies
+    ];
+
+    const goalMatchCriteria: any = {};
+
+    if (currentUser.goal) {
+
+      if (currentUser.goal.title) {
+        goalMatchCriteria['goal.title'] = currentUser.goal.title;
+      }
+
+      if (currentUser.goal.target) {
+        goalMatchCriteria['goal.target'] = currentUser.goal.target;
+      }
+
+      if (currentUser.goal.year) {
+        goalMatchCriteria['goal.year'] = currentUser.goal.year;
+      }
+
+      if (currentUser.goal.level) {
+        goalMatchCriteria['goal.level'] = currentUser.goal.level;
+      }
+    }
+
+    // Get communities the user has joined
+    const userCommunities = await mongoose.model('Community').find({
+      members: currentUser._id
+    }).select('_id');
+
+    const communityIds = userCommunities.map(community => community._id);
+
+    // First query: Find users with exact goal match
+    const exactGoalMatches = await User.find({
+      _id: {$nin: excludeUserIds},
+      ...goalMatchCriteria,
+      buddy: null // Only suggest users who don't have a buddy yet
+    })
+        .select('-hashPassword')
+        .limit(10);
+
+    // Second query: Find users in same communities
+    const communityMatches = await User.find({
+      _id: {$nin: [...excludeUserIds, ...exactGoalMatches.map(user => user._id)]},
+      communities: {$in: communityIds},
+      buddy: null // who don't have a buddy yet
+    })
+        .select('-hashPassword')
+        .limit(10);
+
+    const partialGoalCriteria: any = {};
+
+    if (currentUser.goal) {
+      if (currentUser.goal.title) {
+        // Use regex for partial title match
+        partialGoalCriteria['goal.title'] = {
+          $regex: new RegExp(currentUser.goal.title.split(' ').join('|'), 'i')
+        };
+      }
+
+      if (currentUser.goal.year) {
+        partialGoalCriteria['goal.year'] = {
+          $gte: currentUser.goal.year - 1,
+          $lte: currentUser.goal.year + 1
+        };
+      }
+    }
+
+    const partialGoalMatches = await User.find({
+      _id: {
+        $nin: [...excludeUserIds,
+          ...exactGoalMatches.map(user => user._id),
+          ...communityMatches.map(user => user._id)]
+      },
+      ...partialGoalCriteria,
+      buddy: null
+    })
+        .select('-hashPassword')
+        .limit(10);
+
+    // Calculate match score for all potential buddies
+    const calculateMatchScore = (user: any) => {
+      let score = 0;
+
+      if (user.goal && currentUser.goal) {
+        if (user.goal.title === currentUser.goal.title) score += 50;
+        if (user.goal.target === currentUser.goal.target) score += 20;
+        if (user.goal.year === currentUser.goal.year) score += 20;
+        if (user.goal.level === currentUser.goal.level) score += 10;
+      }
+
+      if (user.interests && currentUser.interests) {
+        const commonInterests = user.interests.filter((interest: string) =>
+            currentUser.interests.includes(interest)
+        );
+        score += commonInterests.length * 5;
+      }
+
+      return score;
+    };
+
+    // Combine all matches and sort by score
+    const allPotentialBuddies = [
+      ...exactGoalMatches,
+      ...communityMatches,
+      ...partialGoalMatches
+    ];
+
+    const scoredBuddies = allPotentialBuddies.map(user => ({
+      user,
+      score: calculateMatchScore(user)
+    }));
+
+    // Sort by score descending
+    scoredBuddies.sort((a, b) => b.score - a.score);
+
+    // Extract top 20 recommendations
+    const recommendations = scoredBuddies.slice(0, 20).map(item => item.user);
+
+    res.status(200).json(formatResponse(true, "Buddy suggestions retrieved successfully", {
+      recommendations
+    }));
+    return;
+
+  } catch (error) {
+    handleError(error, res, "Error suggesting buddy");
+  }
+};
