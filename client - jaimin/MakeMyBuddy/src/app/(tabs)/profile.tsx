@@ -153,7 +153,6 @@ export default function Profile() {
         // Clear input
         setNewInterest('');
     };
-    
     // Remove an interest
     const removeInterest = (interest: string) => {
         if (!isEditing) return;
@@ -271,7 +270,20 @@ export default function Profile() {
                         </>
                     )}
                 </View>
-                
+                {/* Buddies count with minimal design */}
+                <View className="px-6 mb-12">
+                    <View className="flex-row items-center mb-4">
+                        <View className="w-1 h-6 bg-sky-500 rounded-full mr-3" />
+                        <Text className="text-lg font-bold">My Buddies</Text>
+                    </View>
+                    
+                    <View className="bg-gray-50 rounded-xl p-5 items-center justify-center">
+                        <Text className="text-3xl font-bold text-sky-500 mb-1">
+                            {user?.buddies?.length || 0}
+                        </Text>
+                        <Text className="text-gray-500">Total Buddies</Text>
+                    </View>
+                </View>
                 {/* Goals section with minimal design */}
                 <View className="px-6 mb-8">
                     <View className="flex-row items-center mb-4">
@@ -480,6 +492,8 @@ export default function Profile() {
                         )}
                     </View>
                 </View>
+                
+                
                 
                 {/* Logout button or Submit button based on edit mode */}
                 <View className="px-6">
