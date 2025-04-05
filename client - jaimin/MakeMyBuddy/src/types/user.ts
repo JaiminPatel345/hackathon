@@ -30,3 +30,15 @@ export enum IGoalLevel {
   INTERMEDIATE = 'INTERMEDIATE',
   BEGINNER = 'BEGINNER',
 }
+
+export interface UpdateProfileRequest {
+  name?: string;
+  goal?: {
+    title: string;
+    target: string;
+    year: number;
+    level: IGoalLevel;
+  };
+  interests?: string[];
+  avatar?: string;
+}
